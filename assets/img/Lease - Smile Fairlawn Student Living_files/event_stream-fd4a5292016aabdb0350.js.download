@@ -1,0 +1,253 @@
+(self["webpackChunktportal_assets"] = self["webpackChunktportal_assets"] || []).push([[7956],{
+
+/***/ 20500:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   destroy: function() { return /* binding */ destroy; },
+/* harmony export */   formDataPost: function() { return /* binding */ formDataPost; },
+/* harmony export */   post: function() { return /* binding */ post; },
+/* harmony export */   serialize: function() { return /* binding */ serialize; }
+/* harmony export */ });
+/* harmony import */ var whatwg_fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(92608);
+/* harmony import */ var whatwg_fetch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(whatwg_fetch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var es6_promise_auto__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(84372);
+/* harmony import */ var es6_promise_auto__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(es6_promise_auto__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _appfolio_rollbar__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(19816);
+function _extends(){_extends=Object.assign?Object.assign.bind():function(target){for(var i=1;i<arguments.length;i++){var source=arguments[i];for(var key in source){if(Object.prototype.hasOwnProperty.call(source,key)){target[key]=source[key];}}}return target;};return _extends.apply(this,arguments);}function _typeof(o){"@babel/helpers - typeof";return _typeof="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(o){return typeof o;}:function(o){return o&&"function"==typeof Symbol&&o.constructor===Symbol&&o!==Symbol.prototype?"symbol":typeof o;},_typeof(o);}// @ts-nocheck
+var HEADERS={Accept:'application/json','Content-Type':'application/json','X-Requested-With':'XMLHttpRequest'// make backwards compatible with rails "request.xhr?"
+};function getCsrfToken(){var meta=document.querySelector('meta[name="csrf-token"]');return meta?meta.getAttribute('content'):'';}/**
+ * Build a query string from an object
+ */function serialize(obj,prefix){var parts=[];Object.keys(obj).forEach(function(key){if(obj[key]!==undefined&&obj[key]!==null){var param=prefix?"".concat(prefix,"[").concat(key,"]"):key;var value=obj[key];if(_typeof(value)==='object'){parts.push(serialize(value,param));}else{parts.push("".concat(encodeURIComponent(param),"=").concat(encodeURIComponent(value)));}}});return parts.join('&');}/**
+ * Checks the response code of an HTTP response.
+ * For 200 responses a Promise for the JSON is returned.  Otherwise an error is thrown
+ */function checkResponseStatus(res){var status=res.status;if(status===204){return Promise.resolve();// No content
+}else if(status===302){window.location.reload();return Promise.reject();}else if(status===401||status===403){window.location.reload();return Promise.reject();}else if(status<200||status>=300){return res.text().then(function(text){var data;try{data=JSON.parse(text);}catch(e){}// eslint-disable-line no-empty
+var error=new Error(!data&&text||res.statusText);error.data=data;throw error;});}return res.json().catch(function(e){_appfolio_rollbar__WEBPACK_IMPORTED_MODULE_2__.error("invalid json response for request: ".concat(res.url),e);});}/**
+ * Perform an HTTP POST to the API and parse the response as JSON
+ */function post(path,body){return fetch(path,{body:JSON.stringify(body),credentials:'same-origin',headers:_extends({'X-CSRF-Token':getCsrfToken()},HEADERS),method:'POST',redirect:'error'}).then(checkResponseStatus);}/**
+ * Perform an HTTP DELETE to the API and parse the response as JSON
+ */function destroy(path,body){return fetch(path,{body:JSON.stringify(body),credentials:'same-origin',headers:_extends({'X-CSRF-Token':getCsrfToken()},HEADERS),method:'DELETE',redirect:'error'}).then(checkResponseStatus);}/**
+ * Perform an HTTP POST for FormData to the API and parse the response
+ */function formDataPost(path,formData){return fetch(path,{body:formData,credentials:'same-origin',headers:{'X-CSRF-Token':getCsrfToken(),Accept:'application/json'},method:'POST',redirect:'error'}).then(checkResponseStatus);}
+
+/***/ }),
+
+/***/ 72180:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./app/javascript/components/fetch_helpers.ts
+var fetch_helpers = __webpack_require__(20500);
+;// CONCATENATED MODULE: ./app/javascript/views/event_stream.ts
+// @ts-nocheck
+window.eventStream={post:function post(eventName,eventData){var environmentRoot=window.location.pathname.startsWith('/connect')?'/connect':'/';(0,fetch_helpers.post)("".concat(environmentRoot,"/client_side_event"),{events:[{event_name:eventName,event_data:eventData}]});}};
+;// CONCATENATED MODULE: ./app/javascript/packs/views/event_stream.ts
+// @ts-nocheck
+
+
+/***/ }),
+
+/***/ 26512:
+/***/ (function(module) {
+
+// shim for using process in browser
+var process = module.exports = {};
+
+// cached from whatever global is present so that test runners that stub it
+// don't break things.  But we need to wrap it in a try catch in case it is
+// wrapped in strict mode code which doesn't define any globals.  It's inside a
+// function because try/catches deoptimize in certain engines.
+
+var cachedSetTimeout;
+var cachedClearTimeout;
+
+function defaultSetTimout() {
+    throw new Error('setTimeout has not been defined');
+}
+function defaultClearTimeout () {
+    throw new Error('clearTimeout has not been defined');
+}
+(function () {
+    try {
+        if (typeof setTimeout === 'function') {
+            cachedSetTimeout = setTimeout;
+        } else {
+            cachedSetTimeout = defaultSetTimout;
+        }
+    } catch (e) {
+        cachedSetTimeout = defaultSetTimout;
+    }
+    try {
+        if (typeof clearTimeout === 'function') {
+            cachedClearTimeout = clearTimeout;
+        } else {
+            cachedClearTimeout = defaultClearTimeout;
+        }
+    } catch (e) {
+        cachedClearTimeout = defaultClearTimeout;
+    }
+} ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        //normal enviroments in sane situations
+        return setTimeout(fun, 0);
+    }
+    // if setTimeout wasn't available but was latter defined
+    if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
+        cachedSetTimeout = setTimeout;
+        return setTimeout(fun, 0);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedSetTimeout(fun, 0);
+    } catch(e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't trust the global object when called normally
+            return cachedSetTimeout.call(null, fun, 0);
+        } catch(e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error
+            return cachedSetTimeout.call(this, fun, 0);
+        }
+    }
+
+
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        //normal enviroments in sane situations
+        return clearTimeout(marker);
+    }
+    // if clearTimeout wasn't available but was latter defined
+    if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
+        cachedClearTimeout = clearTimeout;
+        return clearTimeout(marker);
+    }
+    try {
+        // when when somebody has screwed with setTimeout but no I.E. maddness
+        return cachedClearTimeout(marker);
+    } catch (e){
+        try {
+            // When we are in I.E. but the script has been evaled so I.E. doesn't  trust the global object when called normally
+            return cachedClearTimeout.call(null, marker);
+        } catch (e){
+            // same as above but when it's a version of I.E. that must have the global object for 'this', hopfully our context correct otherwise it will throw a global error.
+            // Some versions of I.E. have different rules for clearTimeout vs setTimeout
+            return cachedClearTimeout.call(this, marker);
+        }
+    }
+
+
+
+}
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = runTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    runClearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        runTimeout(drainQueue);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+process.prependListener = noop;
+process.prependOnceListener = noop;
+
+process.listeners = function (name) { return [] }
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+
+/***/ })
+
+},
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ var __webpack_exec__ = function(moduleId) { return __webpack_require__(__webpack_require__.s = moduleId); }
+/******/ __webpack_require__.O(0, [9816,4019], function() { return __webpack_exec__(72180); });
+/******/ var __webpack_exports__ = __webpack_require__.O();
+/******/ }
+]);

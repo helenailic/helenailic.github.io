@@ -1,0 +1,979 @@
+"use strict";
+(self["webpackChunktportal_assets"] = self["webpackChunktportal_assets"] || []).push([[9020],{
+
+/***/ 93796:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+var moduleExport;
+
+var el = document.createElement('div')
+  , eventMap = {
+  'transition'       : 'transitionend',
+  'WebkitTransition' : 'webkitTransitionEnd',
+  'MozTransition'    : 'transitionend',
+  'OTransition'      : 'oTransitionEnd otransitionend'
+};
+
+for (var key in eventMap) {
+  if (eventMap.hasOwnProperty(key) && el.style[key] != null) {
+
+    // return the transition end event in the map
+    moduleExport = eventMap[key];
+  }
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (moduleExport || null);
+
+
+/***/ }),
+
+/***/ 94760:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(33568);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(18592);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var gears_ui_widget_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(15004);
+
+
+
+
+// Public Class Methods
+
+class Button extends gears_ui_widget_component__WEBPACK_IMPORTED_MODULE_2__["default"] {
+
+  _initialize() {
+    if (this.$target) {
+      this.$el = this.$target;
+      return this._render();
+    } else {
+      this._render();
+      return this.$target = this.$el.data(this._getNamespace(), this);
+    }
+  }
+
+  _update() {
+    return this._render();
+  }
+
+  _render() {
+    if (!this.$el) {
+      switch (this.options.tag) {
+        case "a":
+          this.$el = jquery__WEBPACK_IMPORTED_MODULE_1___default()(`<a href=\"#\" class=\"${Button.className}\">${this.options.title}</a>`);
+          break;
+        case "input":
+          this.$el = jquery__WEBPACK_IMPORTED_MODULE_1___default()(`<input class=\"${Button.className}\" type=\"button\" value=\"${this.options.title}\" />`);
+          break;
+        default: // "a"
+          this.$el = jquery__WEBPACK_IMPORTED_MODULE_1___default()(`<button class=\"${Button.className}\" type=\"button\">${this.options.title}</button>`);
+      }
+
+      if (this.options.type) { this.$el.addClass(`${Button.className}--` + this.options.type); }
+      let self = this;
+      if (this.options.onClick) {
+        return this.$el.on(`click.${this._getNamespace()}`, function(e) {
+          e.preventDefault();
+          return self.options.onClick.apply(self.$el);
+        });
+      }
+    } else {
+      if (this.changedOptions.title) {
+        if (this.$el[0].nodeName === "INPUT") {
+          this.$el.attr("value", this.options.title);
+        } else {
+          this.$el.html(this.options.title);
+        }
+      }
+      if (this.changedOptions.type) {
+        if (this.previousOptions.type) { this.$el.removeClass(`${Button.className}--` + this.previousOptions.type); }
+        this.$el.addClass(`${Button.className}--` + this.options.type);
+      }
+      if (this.changedOptions.onClick) {
+        this.$el.off(`click.${this._getNamespace()}`);
+        return this.$el.on(`click.${this._getNamespace()}`, this.options.onClick);
+      }
+    }
+  }
+}
+
+Button.defaults = {
+  // title: (required)
+  // type: (optional)
+  // onClick: (optional)
+};
+
+Button.className = "button";
+
+Button.namespace = "gears:button";
+
+/* harmony default export */ __webpack_exports__["default"] = (Button);
+
+
+/***/ }),
+
+/***/ 19020:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": function() { return /* binding */ modal_component; }
+});
+
+// EXTERNAL MODULE: ./node_modules/lodash/lodash.js
+var lodash = __webpack_require__(33568);
+var lodash_default = /*#__PURE__*/__webpack_require__.n(lodash);
+// EXTERNAL MODULE: external "$"
+var external_$_ = __webpack_require__(18592);
+var external_$_default = /*#__PURE__*/__webpack_require__.n(external_$_);
+;// CONCATENATED MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/support/viewport/component.es6
+function viewport() {
+  return window.getComputedStyle(document.body, ':after').getPropertyValue('content').replace(/["']/g, '');
+}
+
+/* harmony default export */ var component = (viewport);
+
+// EXTERNAL MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/showable-widget/component.es6
+var showable_widget_component = __webpack_require__(94470);
+// EXTERNAL MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/button/component.es6
+var button_component = __webpack_require__(94760);
+// EXTERNAL MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/widget/component.es6 + 1 modules
+var widget_component = __webpack_require__(15004);
+;// CONCATENATED MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/progress/component.es6
+
+
+
+
+// creates an array of numbers (of length "count") that add up to the "sum" argument
+// the numbers are randomized to deviate from the median (based on the deviation argument)
+var randomIntervals = function(count, sum, deviation, set) {
+  if (deviation == null) { deviation = .5; }
+  if (set == null) { set = []; }
+  if (count > 1) {
+    let median = sum / count;
+    let intervalMin = median * (1 - deviation);
+    let intervalMax = median * (1 + deviation);
+    let interval = lodash_default().random(intervalMin, intervalMax);
+    return randomIntervals(count - 1, sum - interval, deviation, set.concat(interval));
+  } else {
+    return set.concat(sum);
+  }
+};
+
+class Progress extends widget_component["default"] {
+
+  simulate(value, duration, callback) {
+    let increment;
+    let totalDistance = value - this.options.value;
+    let intervalCount = Math.round(duration/300); // 300 is the number of time between updates
+    let timeIntervals = randomIntervals(intervalCount, duration);
+    let distanceIntervals = randomIntervals(intervalCount, totalDistance);
+    (increment = () => {
+      let time = timeIntervals.pop();
+      this.set({value: this.options.value += distanceIntervals.pop()});
+      this.$bar.css("width", `${this.options.value}%`);
+      if (timeIntervals.length) {
+        return this.timeout = setTimeout(increment, time);
+      } else {
+        this.set(this.options.value = value);
+        return __guardFunc__(callback, f => f());
+      }
+    }
+    )();
+    return this;
+  }
+
+  set() {
+    super.set(...arguments);
+    // call the onComplete callback when the value reaches 100
+    if (this.options.value >= 100) { __guard__(this.options.onComplete, x => x.call(this.$el[0])); }
+    return this;
+  }
+
+  destroy() {
+    this.$el.remove();
+    return this;
+  }
+
+  _initialize() {
+    super._initialize(...arguments);
+    if (this.$target) {
+      this.$el = this.$target;
+      return this._render();
+    } else {
+      this._render();
+      return this.$target = this.$el.data(this._getNamespace(), this);
+    }
+  }
+
+  _update() {
+    return this._render();
+  }
+
+  _render(options) {
+    // super(_.defaults(options, {attributes:{class: "progress"}}))
+    if (!this.$el) {
+      this.$el = external_$_default()(`<div class=\"${Progress.className}\" />`);
+    }
+
+    // stop a currenly running simulation
+    clearTimeout(this.timeout);
+
+    if (this.$el.children().length) {
+      this.$bar = this.$el.children().first();
+    } else {
+      this.$bar = external_$_default()(`<div class=\"${Progress.className}__value\" />`).appendTo(this.$el);
+    }
+    this.$bar.css("width", `${this.options.value}%`);
+
+    if (this.changedOptions.type) {
+      this.$el.addClass(`${Progress.className}--${this.options.type}`);
+      if (this.previousOptions.type) { this.$el.removeClass(`${Progress.className}--${this.previousOptions.type}`); }
+    }
+
+    // update the value if it"s changed
+    if (this.options.value !== this.previousOptions.value) { return this.$bar.css("width", `${this.options.value}%`); }
+  }
+}
+
+
+Progress.defaults = {
+  value: 0
+  // type: (optional)
+  // onComplete: (optional)
+};
+
+Progress.className = "progress";
+
+Progress.namespace = "gears:progress";
+
+/* harmony default export */ var progress_component = (Progress);
+
+function __guardFunc__(func, transform) {
+  return typeof func === 'function' ? transform(func) : undefined;
+}
+function __guard__(value, transform) {
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+}
+
+;// CONCATENATED MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/modal/component.es6
+
+
+
+
+
+
+
+// The global instance
+let singleton = undefined;
+
+external_$_default().extend((external_$_default()).expr[':'], {
+  inview(a) {
+    let st = (document.documentElement.scrollTop || document.body.scrollTop);
+    let ot = external_$_default()(a).offset().top;
+    let wh = (window.innerHeight && (window.innerHeight < external_$_default()(window).height())) ? window.innerHeight : external_$_default()(window).height();
+    return (ot > st) && ((external_$_default()(a).height() + ot) < (st + wh));
+  }
+}
+);
+
+class Modal extends showable_widget_component["default"] {
+
+  // TODO: implement some of these ideas
+  // http://www.nczonline.net/blog/2013/02/12/making-an-accessible-dialog-box/
+
+  constructor(options) {
+    super(...arguments);
+
+    // The constructor should return the singleton instance if it exists
+    if (singleton instanceof Modal && singleton.state() !== "destroyed") {
+      return singleton.set(options);
+    }
+
+    singleton = this;
+  }
+
+  show() {
+    let scrollbarWidth = window.innerWidth ?
+      window.innerWidth - document.documentElement.clientWidth
+    :
+      0;
+
+    if (scrollbarWidth) { external_$_default()(document.body).css("margin-right", scrollbarWidth); }
+
+    external_$_default()(document.body).addClass(`is-${this.constructor.className}-showing`);
+    return super.show(...arguments);
+  }
+
+  destroy() {
+    external_$_default()(document).off(`.${this._getNamespace()}`);
+    return super.destroy(...arguments);
+  }
+
+  _onShown() {
+    this._setFocus();
+    this._configureKeyEvents();
+    this._preventTabbingOutside();
+    return super._onShown(...arguments);
+  }
+
+  _onHidden() {
+    external_$_default()(document.body)
+      .css("margin-right", 0)
+      .removeClass(`is-${this.constructor.className}-showing`);
+    external_$_default()(document).off(`.${this._getNamespace()}`);
+    return super._onHidden(...arguments);
+  }
+
+  _update() {
+    this._render();
+    // We also need to re-register the tab listener in case tabbable
+    // elements have been added/removed from the modal.
+    return this._preventTabbingOutside();
+  }
+
+  _render() {
+    let contents;
+    if (!this.$el) { this.$el = external_$_default()(`\
+<div class="${Modal.className}" tabindex="-1">
+<div class="${Modal.className}__dialog-container" />
+</div>\
+`); }
+    this.$el.data(this._getNamespace(), this);
+
+    // setting the HTML overrides setting header, body, and footer
+    if (this.options.html) {
+      contents = [this.options.html];
+    } else {
+      contents = [this._renderHeader(), this._renderBody(), this._renderFooter()];
+    }
+
+    let $dialog = this.$el.find(".modal__dialog");
+    if ($dialog.length) {
+      $dialog.empty().append(contents);
+    } else {
+      $dialog = external_$_default()(`<div class=\"${Modal.className}__dialog bg-light\" tabindex=\"-1\">`).appendTo(this.$el.children());
+      $dialog.append.apply($dialog, contents);
+    }
+
+    this._setDimensions();
+    this._configureHideButtons();
+    if (this.state() === "shown") { return this._setFocus(); }
+  }
+
+  _renderHeader() {
+    let $header = external_$_default()(`\
+<div class="${Modal.className}__header">
+<h3 class="${Modal.className}__title">${this.options.title}</h3>
+</div>\
+`);
+    if (this.options.hideable) {
+      $header.append(`\
+<a href="#" class="js-${Modal.className}-hide ${Modal.className}__hide"></a>\
+`);
+    }
+    return $header;
+  }
+
+  _renderBody() {
+    return external_$_default()(`<div class=\"${Modal.className}__body\" />`).append(this.options.body);
+  }
+
+  _renderFooter() {
+    if (this.options.footer) {
+      let footer = external_$_default()(`<div class=\"${Modal.className}__footer\" />`).append(this.options.footer);
+      if (this.options.stackButtons) { footer.addClass(`${Modal.className}__footer--stacked`); }
+      return footer;
+    } else {
+      return null;
+    }
+  }
+
+  _setDimensions() {
+    if (this.options.width) { return this.$el.find(`.${Modal.className}__dialog`).css({"maxWidth": this.options.width}); }
+  }
+
+  _configureHideButtons() {
+    let self = this;
+    return self.$el
+      .off(`click.${this._getNamespace()}`)
+      .on(`click.${this._getNamespace()}`, `.js-${Modal.className}-hide`, function(e) {
+        e.preventDefault();
+        return self.options.onUserHide.call(self);
+      });
+  }
+
+  _preventTabbingOutside() {
+    let $tabbables = this.$el.find("input, button, select, textarea, a[href]").not(":hidden, :disabled");
+    let $first = $tabbables.first();
+    let $last  = $tabbables.last();
+
+    return external_$_default()(document).off(`keydown.${this._getNamespace()}`).on(`keydown.${this._getNamespace()}`, e => {
+      if (e.keyCode !== 9) { return; }
+      if (!e.shiftKey && ( $last.is(e.target) || this.$el.is(e.target) )) {
+        $first.focus();
+        return false;
+      } else if (e.shiftKey && ( $first.is(e.target) || this.$el.is(e.target))) {
+        $last.focus();
+        return false;
+      }
+    }
+    );
+  }
+
+  _configureKeyEvents() {
+    let self = this;
+    return external_$_default()(document).on(`keyup.${this._getNamespace()}`, function(e) {
+      if ((e.keyCode === 27) && self.options.hideable) {
+        return self.options.onUserHide.call(self);
+      }
+    });
+  }
+
+  _setFocus() {
+    if (!component_guard_(window.Modernizr, x => x.touch) && (component() !== 'small')) {
+      // autofocus on the first logical element in the modal
+      return this.$el
+        .find(":input:not(:hidden):not(:disabled):not([type=file]):not(.js-no-autofocus)")
+        .filter(":inview")
+        .first()
+        .focus();
+    }
+  }
+}
+
+
+Modal.defaults = {
+  animate: true,
+  hideable: true,
+  onUserHide: Modal.prototype.hide,
+  destroyOnHidden: true,
+  removeOnHidden: true,
+  stackButtons: false
+  // title: (optional)
+  // body: (optional)
+  // html: (options)
+  // footer: (optional)
+  // width: 400 (this default is in the CSS, but it can be overridden in JavaScript)
+};
+
+Modal.className = "modal";
+
+Modal.namespace = "gears:modal";
+
+
+// "Class" methods
+
+Modal.wait = function(options) {
+  if (options == null) { options = {}; }
+  if (component_guard_(window.Modernizr, x => x.cssanimations)) {
+    options.body = new progress_component({value:100}).$el;
+  } else {
+    options.body = '<div class="modal__spinner"></div>';
+  }
+
+  options = lodash_default().extend({}, Modal.defaults, Modal.wait.defaults, options);
+  return new Modal(options).show();
+};
+
+Modal.wait.defaults = {
+  title: "Please Wait...",
+  footer: null
+};
+
+Modal.confirm = function(options) {
+  if (options == null) { options = {}; }
+  options = lodash_default().extend({}, Modal.defaults, Modal.confirm.defaults, options);
+  return _dialog(options);
+};
+
+Modal.confirm.defaults = {
+  title: "Please Confirm",
+  // body: "Are you sure you want to continue?"
+  continueLabel: "OK",
+  cancelLabel: "Cancel"
+};
+
+
+Modal.alert = function(options) {
+  if (options == null) { options = {}; }
+  options = lodash_default().extend({}, Modal.defaults, Modal.alert.defaults, options);
+  return _dialog(options);
+};
+
+Modal.alert.defaults = {
+  title: "Warning",
+  // body: "Are you sure you want to continue?"
+  continueLabel: "OK"
+};
+
+
+// Private methods
+
+var _dialog = function(options) {
+
+  let deferred = external_$_default().Deferred();
+  let $footer = external_$_default()();
+
+  // create the continue button
+  let continueButtonOptions = {
+    title: options.continueLabel,
+    onClick: deferred.resolve
+  };
+  if (options.cancelLabel) { continueButtonOptions.type = "primary"; }
+  let continueButton = new button_component["default"](continueButtonOptions);
+  $footer = $footer.add(continueButton.$el);
+
+  // create the cancel button (if needed)
+  if (options.cancelLabel) {
+    let cancelButton = new button_component["default"]({
+      title: options.cancelLabel,
+      onClick: deferred.reject
+    });
+    $footer = $footer.add(cancelButton.$el);
+  }
+
+  // merge the options
+  options = lodash_default().extend(
+    lodash_default().omit(options, "continueLabel", "cancelLabel"),
+    {
+      destroyOnHidden: true,
+      footer: $footer,
+      // closing the modal should resolve the deferred in the
+      // alert case and reject it in the confirm case
+      onUserHide: options.cancelLabel ? deferred.reject : deferred.resolve
+    }
+  );
+  let modal = new Modal(options).show();
+
+  return deferred.promise().always( lodash_default().bind(modal.hide, modal) );
+};
+
+/* harmony default export */ var modal_component = (Modal);
+
+function component_guard_(value, transform) {
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+}
+
+
+/***/ }),
+
+/***/ 94470:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(33568);
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(18592);
+/* harmony import */ var jquery__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(jquery__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var gears_support_transitionend_component__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(93796);
+/* harmony import */ var gears_ui_widget_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(15004);
+
+
+
+
+
+// This is a special event that can be added to widget elements
+// to determine when a widget is removed from the DOM.
+// Since jQuery removes all events and data before removing DOM
+// elements, listening for the removal of this event will tell
+// us that the bound element is about to be removed
+// Note: that means that this event should never be manually
+// removed or the callback will also be invoked.
+(jquery__WEBPACK_IMPORTED_MODULE_1___default().event).special["gears:showablewidget:remove"] = {remove(obj) { return __guardMethod__(obj, 'handler', o => o.handler()); }};
+
+
+class ShowableWidget extends gears_ui_widget_component__WEBPACK_IMPORTED_MODULE_3__["default"] {
+
+  state() {
+    return this._state;
+  }
+
+  show(callback) {
+
+    if (this._state === "shown") {
+      __guardFunc__(callback, f => f());
+      return this;
+    }
+
+    if (callback) {
+      this._showCallbacks.add(callback);
+    }
+
+    // make sure the callback is added (above) before doing this check
+    if (this._state === "showing") {
+      return this;
+    }
+
+    // make sure @$el is rendered, but don't rerender if it already exists
+    if (!this.$el) { this._render(); }
+
+    this._state = 'showing';
+
+    // determine if $el is already in the DOM, if not add it
+    if (!this.$el.closest("body").length) { this.$el.appendTo("body"); }
+
+    if (this.options.animate && gears_support_transitionend_component__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+
+      this.$el
+        .removeClass('u-hidden is-transitioning-out') // just in case
+        .addClass('is-before-transition');
+
+      (this.$target || this.$el).trigger(this._getNamespace() + ':show');
+
+      // force a repaint to ensure transitioning works
+      this._position();
+
+      // start the transition
+      this.$el
+        .addClass('is-transitioning-in')
+        .removeClass('is-before-transition')
+        .off(gears_support_transitionend_component__WEBPACK_IMPORTED_MODULE_2__["default"] + "." + this._getNamespace())
+        .one(gears_support_transitionend_component__WEBPACK_IMPORTED_MODULE_2__["default"] + "." + this._getNamespace(), lodash__WEBPACK_IMPORTED_MODULE_0___default().bind( function() {
+          this.$el.removeClass('is-transitioning-in');
+          return this._onShown();
+        }
+        , this));
+    } else {
+      this.$el.removeClass('u-hidden');
+      (this.$target || this.$el).trigger(this._getNamespace() + ':show');
+      this._position();
+      this._onShown();
+    }
+    return this;
+  }
+
+  hide(callback) {
+
+    // argument shifting
+    let destroyOnHidden;
+    if (typeof destroyOnHidden === "function") {
+      callback = destroyOnHidden;
+      destroyOnHidden = true;
+    }
+
+    if (["hidden", "destroyed"].includes(this._state)) {
+      __guardFunc__(callback, f => f());
+      return this;
+    }
+
+    // Add the callbacks
+    if (callback) { this._hideCallbacks.add(callback); }
+    if (this.options.destroyOnHidden === true) { this._hideCallbacks.add(lodash__WEBPACK_IMPORTED_MODULE_0___default().bind(this.destroy, this)); }
+
+    // make sure the callback is added before doing this check
+    if (this._state === "hiding") {
+      return this;
+    }
+
+    this._state = 'hiding';
+    (this.$target || this.$el).trigger(this._getNamespace() + ':hide');
+
+    if (this.options.animate && gears_support_transitionend_component__WEBPACK_IMPORTED_MODULE_2__["default"]) {
+
+      this.$el.removeClass('is-transitioning-in u-hidden'); // just in case
+
+      // force a repaint to ensure transitioning works
+      this._position();
+
+      this.$el
+        .addClass('is-transitioning-out')
+        .off(`.${this._getNamespace()}`)
+        .one(gears_support_transitionend_component__WEBPACK_IMPORTED_MODULE_2__["default"] + "." + this._getNamespace(), lodash__WEBPACK_IMPORTED_MODULE_0___default().bind( function() {
+          this.$el.removeClass('is-transitioning-out');
+          return this._onHidden();
+        }
+        , this));
+    } else {
+      this._onHidden(callback);
+    }
+    return this;
+  }
+
+  destroy() {
+    if (!["hidden", "destroyed"].includes(this._state)) { this._onHidden(); }
+    this._state = "destroyed";
+    this._showCallbacks = null;
+    this._hideCallbacks = null;
+    __guard__(this.$el, x => x.remove());
+    return super.destroy(...arguments);
+  }
+
+  _initialize() {
+    this._state = 'hidden';
+    this._showCallbacks = jquery__WEBPACK_IMPORTED_MODULE_1___default().Callbacks();
+    this._hideCallbacks = jquery__WEBPACK_IMPORTED_MODULE_1___default().Callbacks();
+    return __guard__(this.$target, x => x.on("gears:showablewidget:remove", lodash__WEBPACK_IMPORTED_MODULE_0___default().bind(this.destroy, this)));
+  }
+
+  _onShown() {
+    this._state = 'shown';
+    (this.$target || this.$el).trigger(this._getNamespace() + ':shown');
+    __guard__(this._showCallbacks, x => x.fire().empty());
+    return __guard__(this._hideCallbacks, x1 => x1.empty());
+  }
+
+  _onHidden() {
+    this.$el.addClass("u-hidden");
+    this._state = 'hidden';
+    __guard__((this.$target || this.$el), x => x.trigger(this._getNamespace() + ':hidden'));
+    if (this.options.removeOnHidden) {
+      this.$el.remove();
+      this.$el = null;
+    }
+    __guard__(this._hideCallbacks, x1 => x1.fire().empty());
+    return __guard__(this._showCallbacks, x2 => x2.empty());
+  }
+
+  // if overriding and not calling super, make sure your
+  // position method forces a repaint so transitions work
+  _position() {
+    return this.$el[0].offsetHeight; // force a repaint
+  }
+}
+
+
+ShowableWidget.defaults = {
+  animate: true,
+  destroyOnHidden: false,
+  removeOnHidden: true
+};
+
+ShowableWidget.namespace = 'gears:showablewidget';
+
+/* harmony default export */ __webpack_exports__["default"] = (ShowableWidget);
+
+function __guardMethod__(obj, methodName, transform) {
+  if (typeof obj !== 'undefined' && obj !== null && typeof obj[methodName] === 'function') {
+    return transform(obj, methodName);
+  } else {
+    return undefined;
+  }
+}
+function __guardFunc__(func, transform) {
+  return typeof func === 'function' ? transform(func) : undefined;
+}
+function __guard__(value, transform) {
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+}
+
+
+/***/ }),
+
+/***/ 15004:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": function() { return /* binding */ widget_component; }
+});
+
+// EXTERNAL MODULE: ./node_modules/lodash/lodash.js
+var lodash = __webpack_require__(33568);
+var lodash_default = /*#__PURE__*/__webpack_require__.n(lodash);
+// EXTERNAL MODULE: external "$"
+var external_$_ = __webpack_require__(18592);
+var external_$_default = /*#__PURE__*/__webpack_require__.n(external_$_);
+;// CONCATENATED MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/util/dataset/component.es6
+
+
+
+// Polyfil for HTML5 dataset property
+// An attempt will be made to convert booleans, null, numbers, and JSON to native JavaScript types
+// Optionally, you may pass a namespace to filter the set of results
+
+function dataset(el, namespace) {
+
+  var originalDataset = {};
+  var parsedDataset = {};
+  var dataAttrRegex = /^data\-(.+)$/;
+  var rbrace = /^(?:\{.*\}|\[.*\])$/; // taken from jQuery
+  var key;
+
+  // Try to convert string values to a JavaScript type or object
+  var convertType = function(data) {
+    if (typeof data === "string") {
+      try {
+        data =
+          data === "true" ? true :
+          data === "false" ? false :
+          data === "null" ? null :
+          // Only convert to a number if it doesn't change the string
+          data === (+data + "") ? +data :
+          rbrace.test(data) ? external_$_default().parseJSON(data) :
+          data;
+      } catch (e) {}
+    }
+    return data;
+  };
+
+  // get the actual DOM node
+  el = external_$_default()(el)[0];
+
+  // Use the native HTML5 data if it exists
+  if (el.dataset) {
+     // convert the DOMStringMap to an object since DOMStringMap doesn't allow for nested
+     lodash_default().extend(originalDataset, el.dataset);
+  } else {
+    external_$_default().each(el.attributes, function(index, attr) {
+      if (dataAttrRegex.test(attr.nodeName)) {
+        var key = external_$_default().camelCase(attr.nodeName.match(dataAttrRegex)[1]);
+        originalDataset[key] = attr.nodeValue;
+      }
+    });
+  }
+
+  if (namespace) {
+
+    // we expect the namespace to be camelCased
+    namespace = external_$_default().camelCase(namespace);
+
+    for (key in originalDataset) {
+      if (!originalDataset.hasOwnProperty(key)) continue;
+
+      // If there's a data attribute that matches the namespace exactly, assume
+      // it's all we want and just set that value. Don't support cases like:
+      // <div data-namespace='{"foo":"bar", "bar":"foo"}' data-namespace-extra="stuff" />
+      if (key === namespace) {
+        parsedDataset = convertType(originalDataset[key])
+        break;
+      }
+
+      if (key.indexOf(namespace) === 0) {
+        var newKey = key.replace(new RegExp("^" + namespace + "([A-Z])"), function() {
+          return arguments[1].toLowerCase();
+        });
+        parsedDataset[newKey] = convertType(originalDataset[key]);
+      }
+    }
+
+  } else {
+
+    for (key in originalDataset) {
+      if (!originalDataset.hasOwnProperty(key)) continue;
+      parsedDataset[key] = convertType(originalDataset[key]);
+    }
+
+  }
+
+  return parsedDataset;
+}
+
+/* harmony default export */ var component = (dataset);
+
+;// CONCATENATED MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/widget/component.es6
+
+
+
+
+//  Anatomy of a Gears Widget
+//  -------------------------
+//  @$el: the element created by the widget; it usually contains a class with the same name
+//  @$target: (optional) an existing DOM element that widget is instantiated with. Usually the element the user interacts with that acts on @$el; e.g. a link ($target) the user clicks on to show a tooltip ($el)
+//  @options: the current option for the widget
+//  @previousOptions: the options for the widget prior to the most recent invocation of .set()
+//  @changedOptions: the difference between @options and @previousOptions
+
+class Widget {
+
+  constructor(target, options) {
+
+    // target is optional, if an element or selector isn't found
+    // assume it's an options object
+    if (target && (target.nodeType || (typeof target === 'string') || target instanceof (external_$_default()))) {
+      this.$target = external_$_default()(target).first();
+      // if @$target already has an instanced store in the data cache,
+      // return it instead of creating a new instance
+      let instance = this.$target.data(this._getNamespace());
+      if (instance instanceof Widget) {
+        return instance.set(options);
+      } else {
+        this.$target.data(this._getNamespace(), this);
+      }
+    } else {
+      options = target;
+    }
+
+    // Give each widget a unique ID
+    this.wid = lodash_default().uniqueId();
+
+    // Initialize all the options objects
+    this.previousOptions = {};
+    this.changedOptions = {};
+    this.options =  this._fetchOptions(options);
+
+    this._initialize();
+  }
+
+
+  set(options) {
+    if (lodash_default().isEmpty(options)) { return this; }
+    this.previousOptions = this.options;
+    this.options = lodash_default().extend({}, this.options, options);
+    this.changedOptions = {};
+    for (let key of Object.keys(this.options || {})) {
+      let value = this.options[key];
+      if (this.previousOptions[key] !== value) { this.changedOptions[key] = value; }
+    }
+    if (!lodash_default().isEmpty(this.changedOptions)) { this._update(); }
+    return this;
+  }
+
+  destroy() {
+    __guard__(this.$target, x => x.removeData(this._getNamespace()));
+    this.$target = null;
+    this.$el = null;
+    this.options = null;
+    this.previousOptions = null;
+    this.changedOptions = null;
+    return this;
+  }
+
+  // invoked when a new widget is first instantiated
+  _initialize() {}
+
+
+  // invoked when calling set and the widget's options have been changed
+  _update() {}
+
+  _getNamespace() { return this.constructor.namespace; }
+
+  _getDefaults() { return this.constructor.defaults; }
+
+  _fetchOptions(options) {
+    let defaults = this._getDefaults();
+    if (this.$target) {
+      let dataOptions = component(
+        this.$target,
+        this._getNamespace()
+          .substr(this._getNamespace().lastIndexOf(":")+1)
+          .replace(/\:/g, "-")
+      );
+      return lodash_default().extend({}, defaults, dataOptions, options);
+    } else {
+      return lodash_default().extend({}, defaults, options);
+    }
+  }
+}
+
+Widget.namespace = 'gears:widget';
+
+/* harmony default export */ var widget_component = (Widget);
+
+function __guard__(value, transform) {
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+}
+
+
+/***/ })
+
+}]);

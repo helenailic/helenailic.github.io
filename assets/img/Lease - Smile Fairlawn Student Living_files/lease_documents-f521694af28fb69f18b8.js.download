@@ -1,0 +1,36 @@
+"use strict";
+(self["webpackChunktportal_assets"] = self["webpackChunktportal_assets"] || []).push([[2583],{
+
+/***/ 95132:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/modal/component.es6 + 2 modules
+var component = __webpack_require__(19020);
+// EXTERNAL MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/button/component.es6
+var button_component = __webpack_require__(94760);
+;// CONCATENATED MODULE: ./app/javascript/views/lease_documents.ts
+// @ts-nocheck
+window.LeaseDocuments=function(){'use strict';function showPmNotificationLeaseSignModal(redirectPath){new component["default"]({title:'Welcome to the Online Portal!',body:'<p>This tenant has a lease waiting to be signed. They will see the lease when they login and can either sign the document or choose the option to "remind me later".</p>',footer:'<a class="btn btn-primary" href="'+redirectPath+'">Continue to Online Portal</a>',hideable:false}).show();}function showPmNotificationForcedLeaseSignModal(){new component["default"]({title:'Welcome to the Online Portal!',body:'<p>This tenant has a lease waiting to be signed. They won’t be able to access their online portal until they sign the lease.</p>',hideable:false}).show();}function showElectronicDocumentConsentModal(terms,text,paths){var isRenewal=arguments.length>3&&arguments[3]!==undefined?arguments[3]:false;var modal;var acceptButton=new button_component["default"]({title:text.accept,type:'primary',onClick:function onClick(){modal.hide();}});var cancelButton=new button_component["default"]({title:text.cancel,onClick:function onClick(){if(isRenewal){window.location.assign(paths.dashboard);}else{$.ajax({url:paths.signOut,type:'DELETE',success:function success(){window.location.assign(paths.dashboard);}});}}});modal=new component["default"]({width:800,title:text.title,body:terms,footer:[acceptButton.$el,cancelButton.$el],hideable:false}).show();}return{showPmNotificationLeaseSignModal:showPmNotificationLeaseSignModal,showPmNotificationForcedLeaseSignModal:showPmNotificationForcedLeaseSignModal,showElectronicDocumentConsentModal:showElectronicDocumentConsentModal};}(Gears.ui.Modal);
+;// CONCATENATED MODULE: ./app/javascript/packs/views/lease_documents.ts
+// @ts-nocheck
+
+
+/***/ }),
+
+/***/ 18592:
+/***/ (function(module) {
+
+module.exports = $;
+
+/***/ })
+
+},
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ var __webpack_exec__ = function(moduleId) { return __webpack_require__(__webpack_require__.s = moduleId); }
+/******/ __webpack_require__.O(0, [1188,9020], function() { return __webpack_exec__(95132); });
+/******/ var __webpack_exports__ = __webpack_require__.O();
+/******/ }
+]);

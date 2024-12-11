@@ -1,0 +1,2994 @@
+(self["webpackChunktportal_assets"] = self["webpackChunktportal_assets"] || []).push([[1032],{
+
+/***/ 84364:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var config_1 = __webpack_require__(53480);
+function randomMilliseconds() {
+    return Math.round(Math.random() * 1000);
+}
+var BackoffController = /** @class */ (function () {
+    function BackoffController() {
+        this.errorCount = 0;
+    }
+    BackoffController.prototype.getDelay = function () {
+        if (this.errorCount === 0) {
+            return 0;
+        }
+        var baseWaitSeconds = config_1.BACKOFF_BASE_WAIT_SECONDS_BY_ERROR_COUNT[Math.min(config_1.BACKOFF_BASE_WAIT_SECONDS_BY_ERROR_COUNT.length - 1, this.errorCount)];
+        return baseWaitSeconds * 1000 + randomMilliseconds();
+    };
+    BackoffController.prototype.countError = function () {
+        if (this.errorCount < config_1.BACKOFF_BASE_WAIT_SECONDS_BY_ERROR_COUNT.length - 1) {
+            this.errorCount++;
+        }
+    };
+    BackoffController.prototype.reset = function () {
+        this.errorCount = 0;
+    };
+    return BackoffController;
+}());
+exports["default"] = BackoffController;
+
+
+/***/ }),
+
+/***/ 55096:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var browserRequest_1 = __webpack_require__(40228);
+var httpPollingDatafileManager_1 = __importDefault(__webpack_require__(49408));
+var BrowserDatafileManager = /** @class */ (function (_super) {
+    __extends(BrowserDatafileManager, _super);
+    function BrowserDatafileManager() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    BrowserDatafileManager.prototype.makeGetRequest = function (reqUrl, headers) {
+        return browserRequest_1.makeGetRequest(reqUrl, headers);
+    };
+    BrowserDatafileManager.prototype.getConfigDefaults = function () {
+        return {
+            autoUpdate: false,
+        };
+    };
+    return BrowserDatafileManager;
+}(httpPollingDatafileManager_1.default));
+exports["default"] = BrowserDatafileManager;
+
+
+/***/ }),
+
+/***/ 40228:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var config_1 = __webpack_require__(53480);
+var js_sdk_logging_1 = __webpack_require__(9972);
+var logger = js_sdk_logging_1.getLogger('DatafileManager');
+var GET_METHOD = 'GET';
+var READY_STATE_DONE = 4;
+function parseHeadersFromXhr(req) {
+    var allHeadersString = req.getAllResponseHeaders();
+    if (allHeadersString === null) {
+        return {};
+    }
+    var headerLines = allHeadersString.split('\r\n');
+    var headers = {};
+    headerLines.forEach(function (headerLine) {
+        var separatorIndex = headerLine.indexOf(': ');
+        if (separatorIndex > -1) {
+            var headerName = headerLine.slice(0, separatorIndex);
+            var headerValue = headerLine.slice(separatorIndex + 2);
+            if (headerValue.length > 0) {
+                headers[headerName] = headerValue;
+            }
+        }
+    });
+    return headers;
+}
+function setHeadersInXhr(headers, req) {
+    Object.keys(headers).forEach(function (headerName) {
+        var header = headers[headerName];
+        req.setRequestHeader(headerName, header);
+    });
+}
+function makeGetRequest(reqUrl, headers) {
+    var req = new XMLHttpRequest();
+    var responsePromise = new Promise(function (resolve, reject) {
+        req.open(GET_METHOD, reqUrl, true);
+        setHeadersInXhr(headers, req);
+        req.onreadystatechange = function () {
+            if (req.readyState === READY_STATE_DONE) {
+                var statusCode = req.status;
+                if (statusCode === 0) {
+                    reject(new Error('Request error'));
+                    return;
+                }
+                var headers_1 = parseHeadersFromXhr(req);
+                var resp = {
+                    statusCode: req.status,
+                    body: req.responseText,
+                    headers: headers_1,
+                };
+                resolve(resp);
+            }
+        };
+        req.timeout = config_1.REQUEST_TIMEOUT_MS;
+        req.ontimeout = function () {
+            logger.error('Request timed out');
+        };
+        req.send();
+    });
+    return {
+        responsePromise: responsePromise,
+        abort: function () {
+            req.abort();
+        },
+    };
+}
+exports.makeGetRequest = makeGetRequest;
+
+
+/***/ }),
+
+/***/ 53480:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DEFAULT_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 minutes
+exports.MIN_UPDATE_INTERVAL = 1000;
+exports.DEFAULT_URL_TEMPLATE = "https://cdn.optimizely.com/datafiles/%s.json";
+exports.DEFAULT_AUTHENTICATED_URL_TEMPLATE = "https://config.optimizely.com/datafiles/auth/%s.json";
+exports.BACKOFF_BASE_WAIT_SECONDS_BY_ERROR_COUNT = [0, 8, 16, 32, 64, 128, 256, 512];
+exports.REQUEST_TIMEOUT_MS = 60 * 1000; // 1 minute
+
+
+/***/ }),
+
+/***/ 28685:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var EventEmitter = /** @class */ (function () {
+    function EventEmitter() {
+        this.listeners = {};
+        this.listenerId = 1;
+    }
+    EventEmitter.prototype.on = function (eventName, listener) {
+        var _this = this;
+        if (!this.listeners[eventName]) {
+            this.listeners[eventName] = {};
+        }
+        var currentListenerId = String(this.listenerId);
+        this.listenerId++;
+        this.listeners[eventName][currentListenerId] = listener;
+        return function () {
+            if (_this.listeners[eventName]) {
+                delete _this.listeners[eventName][currentListenerId];
+            }
+        };
+    };
+    EventEmitter.prototype.emit = function (eventName, arg) {
+        var listeners = this.listeners[eventName];
+        if (listeners) {
+            Object.keys(listeners).forEach(function (listenerId) {
+                var listener = listeners[listenerId];
+                listener(arg);
+            });
+        }
+    };
+    EventEmitter.prototype.removeAllListeners = function () {
+        this.listeners = {};
+    };
+    return EventEmitter;
+}());
+exports["default"] = EventEmitter;
+// TODO: Create a typed event emitter for use in TS only (not JS)
+
+
+/***/ }),
+
+/***/ 49408:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var js_sdk_logging_1 = __webpack_require__(9972);
+var js_sdk_utils_1 = __webpack_require__(80396);
+var eventEmitter_1 = __importDefault(__webpack_require__(28685));
+var config_1 = __webpack_require__(53480);
+var backoffController_1 = __importDefault(__webpack_require__(84364));
+var logger = js_sdk_logging_1.getLogger('DatafileManager');
+var UPDATE_EVT = 'update';
+function isValidUpdateInterval(updateInterval) {
+    return updateInterval >= config_1.MIN_UPDATE_INTERVAL;
+}
+function isSuccessStatusCode(statusCode) {
+    return statusCode >= 200 && statusCode < 400;
+}
+var noOpKeyValueCache = {
+    get: function () {
+        return Promise.resolve('');
+    },
+    set: function () {
+        return Promise.resolve();
+    },
+    contains: function () {
+        return Promise.resolve(false);
+    },
+    remove: function () {
+        return Promise.resolve();
+    },
+};
+var HttpPollingDatafileManager = /** @class */ (function () {
+    function HttpPollingDatafileManager(config) {
+        var _this = this;
+        var configWithDefaultsApplied = __assign(__assign({}, this.getConfigDefaults()), config);
+        var datafile = configWithDefaultsApplied.datafile, _a = configWithDefaultsApplied.autoUpdate, autoUpdate = _a === void 0 ? false : _a, sdkKey = configWithDefaultsApplied.sdkKey, _b = configWithDefaultsApplied.updateInterval, updateInterval = _b === void 0 ? config_1.DEFAULT_UPDATE_INTERVAL : _b, _c = configWithDefaultsApplied.urlTemplate, urlTemplate = _c === void 0 ? config_1.DEFAULT_URL_TEMPLATE : _c, _d = configWithDefaultsApplied.cache, cache = _d === void 0 ? noOpKeyValueCache : _d;
+        this.cache = cache;
+        this.cacheKey = 'opt-datafile-' + sdkKey;
+        this.isReadyPromiseSettled = false;
+        this.readyPromiseResolver = function () { };
+        this.readyPromiseRejecter = function () { };
+        this.readyPromise = new Promise(function (resolve, reject) {
+            _this.readyPromiseResolver = resolve;
+            _this.readyPromiseRejecter = reject;
+        });
+        if (datafile) {
+            this.currentDatafile = datafile;
+            if (!sdkKey) {
+                this.resolveReadyPromise();
+            }
+        }
+        else {
+            this.currentDatafile = '';
+        }
+        this.isStarted = false;
+        this.datafileUrl = js_sdk_utils_1.sprintf(urlTemplate, sdkKey);
+        this.emitter = new eventEmitter_1.default();
+        this.autoUpdate = autoUpdate;
+        if (isValidUpdateInterval(updateInterval)) {
+            this.updateInterval = updateInterval;
+        }
+        else {
+            logger.warn('Invalid updateInterval %s, defaulting to %s', updateInterval, config_1.DEFAULT_UPDATE_INTERVAL);
+            this.updateInterval = config_1.DEFAULT_UPDATE_INTERVAL;
+        }
+        this.currentTimeout = null;
+        this.currentRequest = null;
+        this.backoffController = new backoffController_1.default();
+        this.syncOnCurrentRequestComplete = false;
+    }
+    HttpPollingDatafileManager.prototype.get = function () {
+        return this.currentDatafile;
+    };
+    HttpPollingDatafileManager.prototype.start = function () {
+        if (!this.isStarted) {
+            logger.debug('Datafile manager started');
+            this.isStarted = true;
+            this.backoffController.reset();
+            this.setDatafileFromCacheIfAvailable();
+            this.syncDatafile();
+        }
+    };
+    HttpPollingDatafileManager.prototype.stop = function () {
+        logger.debug('Datafile manager stopped');
+        this.isStarted = false;
+        if (this.currentTimeout) {
+            clearTimeout(this.currentTimeout);
+            this.currentTimeout = null;
+        }
+        this.emitter.removeAllListeners();
+        if (this.currentRequest) {
+            this.currentRequest.abort();
+            this.currentRequest = null;
+        }
+        return Promise.resolve();
+    };
+    HttpPollingDatafileManager.prototype.onReady = function () {
+        return this.readyPromise;
+    };
+    HttpPollingDatafileManager.prototype.on = function (eventName, listener) {
+        return this.emitter.on(eventName, listener);
+    };
+    HttpPollingDatafileManager.prototype.onRequestRejected = function (err) {
+        if (!this.isStarted) {
+            return;
+        }
+        this.backoffController.countError();
+        if (err instanceof Error) {
+            logger.error('Error fetching datafile: %s', err.message, err);
+        }
+        else if (typeof err === 'string') {
+            logger.error('Error fetching datafile: %s', err);
+        }
+        else {
+            logger.error('Error fetching datafile');
+        }
+    };
+    HttpPollingDatafileManager.prototype.onRequestResolved = function (response) {
+        if (!this.isStarted) {
+            return;
+        }
+        if (typeof response.statusCode !== 'undefined' && isSuccessStatusCode(response.statusCode)) {
+            this.backoffController.reset();
+        }
+        else {
+            this.backoffController.countError();
+        }
+        this.trySavingLastModified(response.headers);
+        var datafile = this.getNextDatafileFromResponse(response);
+        if (datafile !== '') {
+            logger.info('Updating datafile from response');
+            this.currentDatafile = datafile;
+            this.cache.set(this.cacheKey, datafile);
+            if (!this.isReadyPromiseSettled) {
+                this.resolveReadyPromise();
+            }
+            else {
+                var datafileUpdate = {
+                    datafile: datafile,
+                };
+                this.emitter.emit(UPDATE_EVT, datafileUpdate);
+            }
+        }
+    };
+    HttpPollingDatafileManager.prototype.onRequestComplete = function () {
+        if (!this.isStarted) {
+            return;
+        }
+        this.currentRequest = null;
+        if (!this.isReadyPromiseSettled && !this.autoUpdate) {
+            // We will never resolve ready, so reject it
+            this.rejectReadyPromise(new Error('Failed to become ready'));
+        }
+        if (this.autoUpdate && this.syncOnCurrentRequestComplete) {
+            this.syncDatafile();
+        }
+        this.syncOnCurrentRequestComplete = false;
+    };
+    HttpPollingDatafileManager.prototype.syncDatafile = function () {
+        var _this = this;
+        var headers = {};
+        if (this.lastResponseLastModified) {
+            headers['if-modified-since'] = this.lastResponseLastModified;
+        }
+        logger.debug('Making datafile request to url %s with headers: %s', this.datafileUrl, function () { return JSON.stringify(headers); });
+        this.currentRequest = this.makeGetRequest(this.datafileUrl, headers);
+        var onRequestComplete = function () {
+            _this.onRequestComplete();
+        };
+        var onRequestResolved = function (response) {
+            _this.onRequestResolved(response);
+        };
+        var onRequestRejected = function (err) {
+            _this.onRequestRejected(err);
+        };
+        this.currentRequest.responsePromise
+            .then(onRequestResolved, onRequestRejected)
+            .then(onRequestComplete, onRequestComplete);
+        if (this.autoUpdate) {
+            this.scheduleNextUpdate();
+        }
+    };
+    HttpPollingDatafileManager.prototype.resolveReadyPromise = function () {
+        this.readyPromiseResolver();
+        this.isReadyPromiseSettled = true;
+    };
+    HttpPollingDatafileManager.prototype.rejectReadyPromise = function (err) {
+        this.readyPromiseRejecter(err);
+        this.isReadyPromiseSettled = true;
+    };
+    HttpPollingDatafileManager.prototype.scheduleNextUpdate = function () {
+        var _this = this;
+        var currentBackoffDelay = this.backoffController.getDelay();
+        var nextUpdateDelay = Math.max(currentBackoffDelay, this.updateInterval);
+        logger.debug('Scheduling sync in %s ms', nextUpdateDelay);
+        this.currentTimeout = setTimeout(function () {
+            if (_this.currentRequest) {
+                _this.syncOnCurrentRequestComplete = true;
+            }
+            else {
+                _this.syncDatafile();
+            }
+        }, nextUpdateDelay);
+    };
+    HttpPollingDatafileManager.prototype.getNextDatafileFromResponse = function (response) {
+        logger.debug('Response status code: %s', response.statusCode);
+        if (typeof response.statusCode === 'undefined') {
+            return '';
+        }
+        if (response.statusCode === 304) {
+            return '';
+        }
+        if (isSuccessStatusCode(response.statusCode)) {
+            return response.body;
+        }
+        return '';
+    };
+    HttpPollingDatafileManager.prototype.trySavingLastModified = function (headers) {
+        var lastModifiedHeader = headers['last-modified'] || headers['Last-Modified'];
+        if (typeof lastModifiedHeader !== 'undefined') {
+            this.lastResponseLastModified = lastModifiedHeader;
+            logger.debug('Saved last modified header value from response: %s', this.lastResponseLastModified);
+        }
+    };
+    HttpPollingDatafileManager.prototype.setDatafileFromCacheIfAvailable = function () {
+        var _this = this;
+        this.cache.get(this.cacheKey).then(function (datafile) {
+            if (_this.isStarted && !_this.isReadyPromiseSettled && datafile !== '') {
+                logger.debug('Using datafile from cache');
+                _this.currentDatafile = datafile;
+                _this.resolveReadyPromise();
+            }
+        });
+    };
+    return HttpPollingDatafileManager;
+}());
+exports["default"] = HttpPollingDatafileManager;
+
+
+/***/ }),
+
+/***/ 36560:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var browserDatafileManager_1 = __webpack_require__(55096);
+exports.HttpPollingDatafileManager = browserDatafileManager_1.default;
+
+
+/***/ }),
+
+/***/ 51376:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+
+/***/ 83112:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.sendEventNotification = exports.getQueue = exports.validateAndGetBatchSize = exports.validateAndGetFlushInterval = exports.DEFAULT_BATCH_SIZE = exports.DEFAULT_FLUSH_INTERVAL = void 0;
+var eventQueue_1 = __webpack_require__(63560);
+var js_sdk_logging_1 = __webpack_require__(9972);
+var js_sdk_utils_1 = __webpack_require__(80396);
+exports.DEFAULT_FLUSH_INTERVAL = 30000; // Unit is ms - default flush interval is 30s
+exports.DEFAULT_BATCH_SIZE = 10;
+var logger = js_sdk_logging_1.getLogger('EventProcessor');
+function validateAndGetFlushInterval(flushInterval) {
+    if (flushInterval <= 0) {
+        logger.warn("Invalid flushInterval " + flushInterval + ", defaulting to " + exports.DEFAULT_FLUSH_INTERVAL);
+        flushInterval = exports.DEFAULT_FLUSH_INTERVAL;
+    }
+    return flushInterval;
+}
+exports.validateAndGetFlushInterval = validateAndGetFlushInterval;
+function validateAndGetBatchSize(batchSize) {
+    batchSize = Math.floor(batchSize);
+    if (batchSize < 1) {
+        logger.warn("Invalid batchSize " + batchSize + ", defaulting to " + exports.DEFAULT_BATCH_SIZE);
+        batchSize = exports.DEFAULT_BATCH_SIZE;
+    }
+    batchSize = Math.max(1, batchSize);
+    return batchSize;
+}
+exports.validateAndGetBatchSize = validateAndGetBatchSize;
+function getQueue(batchSize, flushInterval, sink, batchComparator) {
+    var queue;
+    if (batchSize > 1) {
+        queue = new eventQueue_1.DefaultEventQueue({
+            flushInterval: flushInterval,
+            maxQueueSize: batchSize,
+            sink: sink,
+            batchComparator: batchComparator,
+        });
+    }
+    else {
+        queue = new eventQueue_1.SingleEventQueue({ sink: sink });
+    }
+    return queue;
+}
+exports.getQueue = getQueue;
+function sendEventNotification(notificationCenter, event) {
+    if (notificationCenter) {
+        notificationCenter.sendNotifications(js_sdk_utils_1.NOTIFICATION_TYPES.LOG_EVENT, event);
+    }
+}
+exports.sendEventNotification = sendEventNotification;
+
+
+/***/ }),
+
+/***/ 63560:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2019, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.DefaultEventQueue = exports.SingleEventQueue = void 0;
+var js_sdk_logging_1 = __webpack_require__(9972);
+var logger = js_sdk_logging_1.getLogger('EventProcessor');
+var Timer = /** @class */ (function () {
+    function Timer(_a) {
+        var timeout = _a.timeout, callback = _a.callback;
+        this.timeout = Math.max(timeout, 0);
+        this.callback = callback;
+    }
+    Timer.prototype.start = function () {
+        this.timeoutId = setTimeout(this.callback, this.timeout);
+    };
+    Timer.prototype.refresh = function () {
+        this.stop();
+        this.start();
+    };
+    Timer.prototype.stop = function () {
+        if (this.timeoutId) {
+            clearTimeout(this.timeoutId);
+        }
+    };
+    return Timer;
+}());
+var SingleEventQueue = /** @class */ (function () {
+    function SingleEventQueue(_a) {
+        var sink = _a.sink;
+        this.sink = sink;
+    }
+    SingleEventQueue.prototype.start = function () {
+        // no-op
+    };
+    SingleEventQueue.prototype.stop = function () {
+        // no-op
+        return Promise.resolve();
+    };
+    SingleEventQueue.prototype.enqueue = function (event) {
+        this.sink([event]);
+    };
+    return SingleEventQueue;
+}());
+exports.SingleEventQueue = SingleEventQueue;
+var DefaultEventQueue = /** @class */ (function () {
+    function DefaultEventQueue(_a) {
+        var flushInterval = _a.flushInterval, maxQueueSize = _a.maxQueueSize, sink = _a.sink, batchComparator = _a.batchComparator;
+        this.buffer = [];
+        this.maxQueueSize = Math.max(maxQueueSize, 1);
+        this.sink = sink;
+        this.batchComparator = batchComparator;
+        this.timer = new Timer({
+            callback: this.flush.bind(this),
+            timeout: flushInterval,
+        });
+        this.started = false;
+    }
+    DefaultEventQueue.prototype.start = function () {
+        this.started = true;
+        // dont start the timer until the first event is enqueued
+    };
+    DefaultEventQueue.prototype.stop = function () {
+        this.started = false;
+        var result = this.sink(this.buffer);
+        this.buffer = [];
+        this.timer.stop();
+        return result;
+    };
+    DefaultEventQueue.prototype.enqueue = function (event) {
+        if (!this.started) {
+            logger.warn('Queue is stopped, not accepting event');
+            return;
+        }
+        // If new event cannot be included into the current batch, flush so it can
+        // be in its own new batch.
+        var bufferedEvent = this.buffer[0];
+        if (bufferedEvent && !this.batchComparator(bufferedEvent, event)) {
+            this.flush();
+        }
+        // start the timer when the first event is put in
+        if (this.buffer.length === 0) {
+            this.timer.refresh();
+        }
+        this.buffer.push(event);
+        if (this.buffer.length >= this.maxQueueSize) {
+            this.flush();
+        }
+    };
+    DefaultEventQueue.prototype.flush = function () {
+        this.sink(this.buffer);
+        this.buffer = [];
+        this.timer.stop();
+    };
+    return DefaultEventQueue;
+}());
+exports.DefaultEventQueue = DefaultEventQueue;
+
+
+/***/ }),
+
+/***/ 64136:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.areEventContextsEqual = void 0;
+function areEventContextsEqual(eventA, eventB) {
+    var contextA = eventA.context;
+    var contextB = eventB.context;
+    return (contextA.accountId === contextB.accountId &&
+        contextA.projectId === contextB.projectId &&
+        contextA.clientName === contextB.clientName &&
+        contextA.clientVersion === contextB.clientVersion &&
+        contextA.revision === contextB.revision &&
+        contextA.anonymizeIP === contextB.anonymizeIP &&
+        contextA.botFiltering === contextB.botFiltering);
+}
+exports.areEventContextsEqual = areEventContextsEqual;
+
+
+/***/ }),
+
+/***/ 89272:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__webpack_require__(64136), exports);
+__exportStar(__webpack_require__(83112), exports);
+__exportStar(__webpack_require__(51376), exports);
+__exportStar(__webpack_require__(83944), exports);
+__exportStar(__webpack_require__(46303), exports);
+__exportStar(__webpack_require__(55252), exports);
+__exportStar(__webpack_require__(43892), exports);
+
+
+/***/ }),
+
+/***/ 83944:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+
+
+/***/ }),
+
+/***/ 46303:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LocalStoragePendingEventsDispatcher = exports.PendingEventsDispatcher = void 0;
+/**
+ * Copyright 2019, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var js_sdk_logging_1 = __webpack_require__(9972);
+var pendingEventsStore_1 = __webpack_require__(62216);
+var js_sdk_utils_1 = __webpack_require__(80396);
+var logger = js_sdk_logging_1.getLogger('EventProcessor');
+var PendingEventsDispatcher = /** @class */ (function () {
+    function PendingEventsDispatcher(_a) {
+        var eventDispatcher = _a.eventDispatcher, store = _a.store;
+        this.dispatcher = eventDispatcher;
+        this.store = store;
+    }
+    PendingEventsDispatcher.prototype.dispatchEvent = function (request, callback) {
+        this.send({
+            uuid: js_sdk_utils_1.generateUUID(),
+            timestamp: js_sdk_utils_1.getTimestamp(),
+            request: request,
+        }, callback);
+    };
+    PendingEventsDispatcher.prototype.sendPendingEvents = function () {
+        var _this = this;
+        var pendingEvents = this.store.values();
+        logger.debug('Sending %s pending events from previous page', pendingEvents.length);
+        pendingEvents.forEach(function (item) {
+            try {
+                _this.send(item, function () { });
+            }
+            catch (e) { }
+        });
+    };
+    PendingEventsDispatcher.prototype.send = function (entry, callback) {
+        var _this = this;
+        this.store.set(entry.uuid, entry);
+        this.dispatcher.dispatchEvent(entry.request, function (response) {
+            _this.store.remove(entry.uuid);
+            callback(response);
+        });
+    };
+    return PendingEventsDispatcher;
+}());
+exports.PendingEventsDispatcher = PendingEventsDispatcher;
+var LocalStoragePendingEventsDispatcher = /** @class */ (function (_super) {
+    __extends(LocalStoragePendingEventsDispatcher, _super);
+    function LocalStoragePendingEventsDispatcher(_a) {
+        var eventDispatcher = _a.eventDispatcher;
+        return _super.call(this, {
+            eventDispatcher: eventDispatcher,
+            store: new pendingEventsStore_1.LocalStorageStore({
+                // TODO make this configurable
+                maxValues: 100,
+                key: 'fs_optly_pending_events',
+            }),
+        }) || this;
+    }
+    return LocalStoragePendingEventsDispatcher;
+}(PendingEventsDispatcher));
+exports.LocalStoragePendingEventsDispatcher = LocalStoragePendingEventsDispatcher;
+
+
+/***/ }),
+
+/***/ 62216:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LocalStorageStore = void 0;
+/**
+ * Copyright 2019, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var js_sdk_utils_1 = __webpack_require__(80396);
+var js_sdk_logging_1 = __webpack_require__(9972);
+var logger = js_sdk_logging_1.getLogger('EventProcessor');
+var LocalStorageStore = /** @class */ (function () {
+    function LocalStorageStore(_a) {
+        var key = _a.key, _b = _a.maxValues, maxValues = _b === void 0 ? 1000 : _b;
+        this.LS_KEY = key;
+        this.maxValues = maxValues;
+    }
+    LocalStorageStore.prototype.get = function (key) {
+        return this.getMap()[key] || null;
+    };
+    LocalStorageStore.prototype.set = function (key, value) {
+        var map = this.getMap();
+        map[key] = value;
+        this.replace(map);
+    };
+    LocalStorageStore.prototype.remove = function (key) {
+        var map = this.getMap();
+        delete map[key];
+        this.replace(map);
+    };
+    LocalStorageStore.prototype.values = function () {
+        return js_sdk_utils_1.objectValues(this.getMap());
+    };
+    LocalStorageStore.prototype.clear = function () {
+        this.replace({});
+    };
+    LocalStorageStore.prototype.replace = function (map) {
+        try {
+            // This is a temporary fix to support React Native which does not have localStorage.
+            window.localStorage && localStorage.setItem(this.LS_KEY, JSON.stringify(map));
+            this.clean();
+        }
+        catch (e) {
+            logger.error(e);
+        }
+    };
+    LocalStorageStore.prototype.clean = function () {
+        var map = this.getMap();
+        var keys = Object.keys(map);
+        var toRemove = keys.length - this.maxValues;
+        if (toRemove < 1) {
+            return;
+        }
+        var entries = keys.map(function (key) { return ({
+            key: key,
+            value: map[key]
+        }); });
+        entries.sort(function (a, b) { return a.value.timestamp - b.value.timestamp; });
+        for (var i = 0; i < toRemove; i++) {
+            delete map[entries[i].key];
+        }
+        this.replace(map);
+    };
+    LocalStorageStore.prototype.getMap = function () {
+        try {
+            // This is a temporary fix to support React Native which does not have localStorage.
+            var data = window.localStorage && localStorage.getItem(this.LS_KEY);
+            if (data) {
+                return JSON.parse(data) || {};
+            }
+        }
+        catch (e) {
+            logger.error(e);
+        }
+        return {};
+    };
+    return LocalStorageStore;
+}());
+exports.LocalStorageStore = LocalStorageStore;
+
+
+/***/ }),
+
+/***/ 41187:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+/**
+ * Copyright 2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * RequestTracker keeps track of in-flight requests for EventProcessor using
+ * an internal counter. It exposes methods for adding a new request to be
+ * tracked, and getting a Promise representing the completion of currently
+ * tracked requests.
+ */
+var RequestTracker = /** @class */ (function () {
+    function RequestTracker() {
+        this.reqsInFlightCount = 0;
+        this.reqsCompleteResolvers = [];
+    }
+    /**
+     * Track the argument request (represented by a Promise). reqPromise will feed
+     * into the state of Promises returned by onRequestsComplete.
+     * @param {Promise<void>} reqPromise
+     */
+    RequestTracker.prototype.trackRequest = function (reqPromise) {
+        var _this = this;
+        this.reqsInFlightCount++;
+        var onReqComplete = function () {
+            _this.reqsInFlightCount--;
+            if (_this.reqsInFlightCount === 0) {
+                _this.reqsCompleteResolvers.forEach(function (resolver) { return resolver(); });
+                _this.reqsCompleteResolvers = [];
+            }
+        };
+        reqPromise.then(onReqComplete, onReqComplete);
+    };
+    /**
+     * Return a Promise that fulfills after all currently-tracked request promises
+     * are resolved.
+     * @return {Promise<void>}
+     */
+    RequestTracker.prototype.onRequestsComplete = function () {
+        var _this = this;
+        return new Promise(function (resolve) {
+            if (_this.reqsInFlightCount === 0) {
+                resolve();
+            }
+            else {
+                _this.reqsCompleteResolvers.push(resolve);
+            }
+        });
+    };
+    return RequestTracker;
+}());
+exports["default"] = RequestTracker;
+
+
+/***/ }),
+
+/***/ 55252:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.formatEvents = exports.buildConversionEventV1 = exports.buildImpressionEventV1 = exports.makeBatchedEventV1 = void 0;
+var ACTIVATE_EVENT_KEY = 'campaign_activated';
+var CUSTOM_ATTRIBUTE_FEATURE_TYPE = 'custom';
+var BOT_FILTERING_KEY = '$opt_bot_filtering';
+/**
+ * Given an array of batchable Decision or ConversionEvent events it returns
+ * a single EventV1 with proper batching
+ *
+ * @param {ProcessableEvent[]} events
+ * @returns {EventV1}
+ */
+function makeBatchedEventV1(events) {
+    var visitors = [];
+    var data = events[0];
+    events.forEach(function (event) {
+        if (event.type === 'conversion' || event.type === 'impression') {
+            var visitor = makeVisitor(event);
+            if (event.type === 'impression') {
+                visitor.snapshots.push(makeDecisionSnapshot(event));
+            }
+            else if (event.type === 'conversion') {
+                visitor.snapshots.push(makeConversionSnapshot(event));
+            }
+            visitors.push(visitor);
+        }
+    });
+    return {
+        client_name: data.context.clientName,
+        client_version: data.context.clientVersion,
+        account_id: data.context.accountId,
+        project_id: data.context.projectId,
+        revision: data.context.revision,
+        anonymize_ip: data.context.anonymizeIP,
+        enrich_decisions: true,
+        visitors: visitors,
+    };
+}
+exports.makeBatchedEventV1 = makeBatchedEventV1;
+function makeConversionSnapshot(conversion) {
+    var tags = __assign({}, conversion.tags);
+    delete tags['revenue'];
+    delete tags['value'];
+    var event = {
+        entity_id: conversion.event.id,
+        key: conversion.event.key,
+        timestamp: conversion.timestamp,
+        uuid: conversion.uuid,
+    };
+    if (conversion.tags) {
+        event.tags = conversion.tags;
+    }
+    if (conversion.value != null) {
+        event.value = conversion.value;
+    }
+    if (conversion.revenue != null) {
+        event.revenue = conversion.revenue;
+    }
+    return {
+        events: [event],
+    };
+}
+function makeDecisionSnapshot(event) {
+    var _a, _b;
+    var layer = event.layer, experiment = event.experiment, variation = event.variation, ruleKey = event.ruleKey, flagKey = event.flagKey, ruleType = event.ruleType, enabled = event.enabled;
+    var layerId = layer ? layer.id : null;
+    var experimentId = (_a = experiment === null || experiment === void 0 ? void 0 : experiment.id) !== null && _a !== void 0 ? _a : '';
+    var variationId = (_b = variation === null || variation === void 0 ? void 0 : variation.id) !== null && _b !== void 0 ? _b : '';
+    var variationKey = variation ? variation.key : '';
+    return {
+        decisions: [
+            {
+                campaign_id: layerId,
+                experiment_id: experimentId,
+                variation_id: variationId,
+                metadata: {
+                    flag_key: flagKey,
+                    rule_key: ruleKey,
+                    rule_type: ruleType,
+                    variation_key: variationKey,
+                    enabled: enabled,
+                },
+            },
+        ],
+        events: [
+            {
+                entity_id: layerId,
+                timestamp: event.timestamp,
+                key: ACTIVATE_EVENT_KEY,
+                uuid: event.uuid,
+            },
+        ],
+    };
+}
+function makeVisitor(data) {
+    var visitor = {
+        snapshots: [],
+        visitor_id: data.user.id,
+        attributes: [],
+    };
+    data.user.attributes.forEach(function (attr) {
+        visitor.attributes.push({
+            entity_id: attr.entityId,
+            key: attr.key,
+            type: 'custom',
+            value: attr.value,
+        });
+    });
+    if (typeof data.context.botFiltering === 'boolean') {
+        visitor.attributes.push({
+            entity_id: BOT_FILTERING_KEY,
+            key: BOT_FILTERING_KEY,
+            type: CUSTOM_ATTRIBUTE_FEATURE_TYPE,
+            value: data.context.botFiltering,
+        });
+    }
+    return visitor;
+}
+/**
+ * Event for usage with v1 logtier
+ *
+ * @export
+ * @interface EventBuilderV1
+ */
+function buildImpressionEventV1(data) {
+    var visitor = makeVisitor(data);
+    visitor.snapshots.push(makeDecisionSnapshot(data));
+    return {
+        client_name: data.context.clientName,
+        client_version: data.context.clientVersion,
+        account_id: data.context.accountId,
+        project_id: data.context.projectId,
+        revision: data.context.revision,
+        anonymize_ip: data.context.anonymizeIP,
+        enrich_decisions: true,
+        visitors: [visitor],
+    };
+}
+exports.buildImpressionEventV1 = buildImpressionEventV1;
+function buildConversionEventV1(data) {
+    var visitor = makeVisitor(data);
+    visitor.snapshots.push(makeConversionSnapshot(data));
+    return {
+        client_name: data.context.clientName,
+        client_version: data.context.clientVersion,
+        account_id: data.context.accountId,
+        project_id: data.context.projectId,
+        revision: data.context.revision,
+        anonymize_ip: data.context.anonymizeIP,
+        enrich_decisions: true,
+        visitors: [visitor],
+    };
+}
+exports.buildConversionEventV1 = buildConversionEventV1;
+function formatEvents(events) {
+    return {
+        url: 'https://logx.optimizely.com/v1/events',
+        httpVerb: 'POST',
+        params: makeBatchedEventV1(events),
+    };
+}
+exports.formatEvents = formatEvents;
+
+
+/***/ }),
+
+/***/ 43892:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.LogTierV1EventProcessor = void 0;
+/**
+ * Copyright 2019-2020, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var js_sdk_logging_1 = __webpack_require__(9972);
+var eventProcessor_1 = __webpack_require__(83112);
+var requestTracker_1 = __importDefault(__webpack_require__(41187));
+var events_1 = __webpack_require__(64136);
+var buildEventV1_1 = __webpack_require__(55252);
+var logger = js_sdk_logging_1.getLogger('LogTierV1EventProcessor');
+var LogTierV1EventProcessor = /** @class */ (function () {
+    function LogTierV1EventProcessor(_a) {
+        var dispatcher = _a.dispatcher, _b = _a.flushInterval, flushInterval = _b === void 0 ? eventProcessor_1.DEFAULT_FLUSH_INTERVAL : _b, _c = _a.batchSize, batchSize = _c === void 0 ? eventProcessor_1.DEFAULT_BATCH_SIZE : _c, notificationCenter = _a.notificationCenter;
+        this.dispatcher = dispatcher;
+        this.notificationCenter = notificationCenter;
+        this.requestTracker = new requestTracker_1.default();
+        flushInterval = eventProcessor_1.validateAndGetFlushInterval(flushInterval);
+        batchSize = eventProcessor_1.validateAndGetBatchSize(batchSize);
+        this.queue = eventProcessor_1.getQueue(batchSize, flushInterval, this.drainQueue.bind(this), events_1.areEventContextsEqual);
+    }
+    LogTierV1EventProcessor.prototype.drainQueue = function (buffer) {
+        var _this = this;
+        var reqPromise = new Promise(function (resolve) {
+            logger.debug('draining queue with %s events', buffer.length);
+            if (buffer.length === 0) {
+                resolve();
+                return;
+            }
+            var formattedEvent = buildEventV1_1.formatEvents(buffer);
+            _this.dispatcher.dispatchEvent(formattedEvent, function () {
+                resolve();
+            });
+            eventProcessor_1.sendEventNotification(_this.notificationCenter, formattedEvent);
+        });
+        this.requestTracker.trackRequest(reqPromise);
+        return reqPromise;
+    };
+    LogTierV1EventProcessor.prototype.process = function (event) {
+        this.queue.enqueue(event);
+    };
+    LogTierV1EventProcessor.prototype.stop = function () {
+        // swallow - an error stopping this queue shouldn't prevent this from stopping
+        try {
+            this.queue.stop();
+            return this.requestTracker.onRequestsComplete();
+        }
+        catch (e) {
+            logger.error('Error stopping EventProcessor: "%s"', e.message, e);
+        }
+        return Promise.resolve();
+    };
+    LogTierV1EventProcessor.prototype.start = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                this.queue.start();
+                return [2 /*return*/];
+            });
+        });
+    };
+    return LogTierV1EventProcessor;
+}());
+exports.LogTierV1EventProcessor = LogTierV1EventProcessor;
+
+
+/***/ }),
+
+/***/ 64435:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * @export
+ * @class NoopErrorHandler
+ * @implements {ErrorHandler}
+ */
+var NoopErrorHandler = /** @class */ (function () {
+    function NoopErrorHandler() {
+    }
+    /**
+     * @param {Error} exception
+     * @memberof NoopErrorHandler
+     */
+    NoopErrorHandler.prototype.handleError = function (exception) {
+        // no-op
+        return;
+    };
+    return NoopErrorHandler;
+}());
+exports.NoopErrorHandler = NoopErrorHandler;
+var globalErrorHandler = new NoopErrorHandler();
+/**
+ * @export
+ * @param {ErrorHandler} handler
+ */
+function setErrorHandler(handler) {
+    globalErrorHandler = handler;
+}
+exports.setErrorHandler = setErrorHandler;
+/**
+ * @export
+ * @returns {ErrorHandler}
+ */
+function getErrorHandler() {
+    return globalErrorHandler;
+}
+exports.getErrorHandler = getErrorHandler;
+/**
+ * @export
+ */
+function resetErrorHandler() {
+    globalErrorHandler = new NoopErrorHandler();
+}
+exports.resetErrorHandler = resetErrorHandler;
+
+
+/***/ }),
+
+/***/ 9972:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * Copyright 2019, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+__export(__webpack_require__(64435));
+__export(__webpack_require__(64804));
+__export(__webpack_require__(16612));
+
+
+/***/ }),
+
+/***/ 16612:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * Copyright 2019, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var errorHandler_1 = __webpack_require__(64435);
+var js_sdk_utils_1 = __webpack_require__(80396);
+var models_1 = __webpack_require__(64804);
+var stringToLogLevel = {
+    NOTSET: 0,
+    DEBUG: 1,
+    INFO: 2,
+    WARNING: 3,
+    ERROR: 4,
+};
+function coerceLogLevel(level) {
+    if (typeof level !== 'string') {
+        return level;
+    }
+    level = level.toUpperCase();
+    if (level === 'WARN') {
+        level = 'WARNING';
+    }
+    if (!stringToLogLevel[level]) {
+        return level;
+    }
+    return stringToLogLevel[level];
+}
+var DefaultLogManager = /** @class */ (function () {
+    function DefaultLogManager() {
+        this.defaultLoggerFacade = new OptimizelyLogger();
+        this.loggers = {};
+    }
+    DefaultLogManager.prototype.getLogger = function (name) {
+        if (!name) {
+            return this.defaultLoggerFacade;
+        }
+        if (!this.loggers[name]) {
+            this.loggers[name] = new OptimizelyLogger({ messagePrefix: name });
+        }
+        return this.loggers[name];
+    };
+    return DefaultLogManager;
+}());
+var ConsoleLogHandler = /** @class */ (function () {
+    /**
+     * Creates an instance of ConsoleLogger.
+     * @param {ConsoleLogHandlerConfig} config
+     * @memberof ConsoleLogger
+     */
+    function ConsoleLogHandler(config) {
+        if (config === void 0) { config = {}; }
+        this.logLevel = models_1.LogLevel.NOTSET;
+        if (config.logLevel !== undefined && js_sdk_utils_1.isValidEnum(models_1.LogLevel, config.logLevel)) {
+            this.setLogLevel(config.logLevel);
+        }
+        this.logToConsole = config.logToConsole !== undefined ? !!config.logToConsole : true;
+        this.prefix = config.prefix !== undefined ? config.prefix : '[OPTIMIZELY]';
+    }
+    /**
+     * @param {LogLevel} level
+     * @param {string} message
+     * @memberof ConsoleLogger
+     */
+    ConsoleLogHandler.prototype.log = function (level, message) {
+        if (!this.shouldLog(level) || !this.logToConsole) {
+            return;
+        }
+        var logMessage = this.prefix + " - " + this.getLogLevelName(level) + " " + this.getTime() + " " + message;
+        this.consoleLog(level, [logMessage]);
+    };
+    /**
+     * @param {LogLevel} level
+     * @memberof ConsoleLogger
+     */
+    ConsoleLogHandler.prototype.setLogLevel = function (level) {
+        level = coerceLogLevel(level);
+        if (!js_sdk_utils_1.isValidEnum(models_1.LogLevel, level) || level === undefined) {
+            this.logLevel = models_1.LogLevel.ERROR;
+        }
+        else {
+            this.logLevel = level;
+        }
+    };
+    /**
+     * @returns {string}
+     * @memberof ConsoleLogger
+     */
+    ConsoleLogHandler.prototype.getTime = function () {
+        return new Date().toISOString();
+    };
+    /**
+     * @private
+     * @param {LogLevel} targetLogLevel
+     * @returns {boolean}
+     * @memberof ConsoleLogger
+     */
+    ConsoleLogHandler.prototype.shouldLog = function (targetLogLevel) {
+        return targetLogLevel >= this.logLevel;
+    };
+    /**
+     * @private
+     * @param {LogLevel} logLevel
+     * @returns {string}
+     * @memberof ConsoleLogger
+     */
+    ConsoleLogHandler.prototype.getLogLevelName = function (logLevel) {
+        switch (logLevel) {
+            case models_1.LogLevel.DEBUG:
+                return 'DEBUG';
+            case models_1.LogLevel.INFO:
+                return 'INFO ';
+            case models_1.LogLevel.WARNING:
+                return 'WARN ';
+            case models_1.LogLevel.ERROR:
+                return 'ERROR';
+            default:
+                return 'NOTSET';
+        }
+    };
+    /**
+     * @private
+     * @param {LogLevel} logLevel
+     * @param {string[]} logArguments
+     * @memberof ConsoleLogger
+     */
+    ConsoleLogHandler.prototype.consoleLog = function (logLevel, logArguments) {
+        switch (logLevel) {
+            case models_1.LogLevel.DEBUG:
+                console.log.apply(console, logArguments);
+                break;
+            case models_1.LogLevel.INFO:
+                console.info.apply(console, logArguments);
+                break;
+            case models_1.LogLevel.WARNING:
+                console.warn.apply(console, logArguments);
+                break;
+            case models_1.LogLevel.ERROR:
+                console.error.apply(console, logArguments);
+                break;
+            default:
+                console.log.apply(console, logArguments);
+        }
+    };
+    return ConsoleLogHandler;
+}());
+exports.ConsoleLogHandler = ConsoleLogHandler;
+var globalLogLevel = models_1.LogLevel.NOTSET;
+var globalLogHandler = null;
+var OptimizelyLogger = /** @class */ (function () {
+    function OptimizelyLogger(opts) {
+        if (opts === void 0) { opts = {}; }
+        this.messagePrefix = '';
+        if (opts.messagePrefix) {
+            this.messagePrefix = opts.messagePrefix;
+        }
+    }
+    /**
+     * @param {(LogLevel | LogInputObject)} levelOrObj
+     * @param {string} [message]
+     * @memberof OptimizelyLogger
+     */
+    OptimizelyLogger.prototype.log = function (level, message) {
+        var splat = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            splat[_i - 2] = arguments[_i];
+        }
+        this.internalLog(coerceLogLevel(level), {
+            message: message,
+            splat: splat,
+        });
+    };
+    OptimizelyLogger.prototype.info = function (message) {
+        var splat = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            splat[_i - 1] = arguments[_i];
+        }
+        this.namedLog(models_1.LogLevel.INFO, message, splat);
+    };
+    OptimizelyLogger.prototype.debug = function (message) {
+        var splat = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            splat[_i - 1] = arguments[_i];
+        }
+        this.namedLog(models_1.LogLevel.DEBUG, message, splat);
+    };
+    OptimizelyLogger.prototype.warn = function (message) {
+        var splat = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            splat[_i - 1] = arguments[_i];
+        }
+        this.namedLog(models_1.LogLevel.WARNING, message, splat);
+    };
+    OptimizelyLogger.prototype.error = function (message) {
+        var splat = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            splat[_i - 1] = arguments[_i];
+        }
+        this.namedLog(models_1.LogLevel.ERROR, message, splat);
+    };
+    OptimizelyLogger.prototype.format = function (data) {
+        return "" + (this.messagePrefix ? this.messagePrefix + ': ' : '') + js_sdk_utils_1.sprintf.apply(void 0, __spreadArrays([data.message], data.splat));
+    };
+    OptimizelyLogger.prototype.internalLog = function (level, data) {
+        if (!globalLogHandler) {
+            return;
+        }
+        if (level < globalLogLevel) {
+            return;
+        }
+        globalLogHandler.log(level, this.format(data));
+        if (data.error && data.error instanceof Error) {
+            errorHandler_1.getErrorHandler().handleError(data.error);
+        }
+    };
+    OptimizelyLogger.prototype.namedLog = function (level, message, splat) {
+        var error;
+        if (message instanceof Error) {
+            error = message;
+            message = error.message;
+            this.internalLog(level, {
+                error: error,
+                message: message,
+                splat: splat,
+            });
+            return;
+        }
+        if (splat.length === 0) {
+            this.internalLog(level, {
+                message: message,
+                splat: splat,
+            });
+            return;
+        }
+        var last = splat[splat.length - 1];
+        if (last instanceof Error) {
+            error = last;
+            splat.splice(-1);
+        }
+        this.internalLog(level, { message: message, error: error, splat: splat });
+    };
+    return OptimizelyLogger;
+}());
+var globalLogManager = new DefaultLogManager();
+function getLogger(name) {
+    return globalLogManager.getLogger(name);
+}
+exports.getLogger = getLogger;
+function setLogHandler(logger) {
+    globalLogHandler = logger;
+}
+exports.setLogHandler = setLogHandler;
+function setLogLevel(level) {
+    level = coerceLogLevel(level);
+    if (!js_sdk_utils_1.isValidEnum(models_1.LogLevel, level) || level === undefined) {
+        globalLogLevel = models_1.LogLevel.ERROR;
+    }
+    else {
+        globalLogLevel = level;
+    }
+}
+exports.setLogLevel = setLogLevel;
+function getLogLevel() {
+    return globalLogLevel;
+}
+exports.getLogLevel = getLogLevel;
+/**
+ * Resets all global logger state to it's original
+ */
+function resetLogger() {
+    globalLogManager = new DefaultLogManager();
+    globalLogLevel = models_1.LogLevel.NOTSET;
+}
+exports.resetLogger = resetLogger;
+
+
+/***/ }),
+
+/***/ 64804:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * Copyright 2019, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var LogLevel;
+(function (LogLevel) {
+    LogLevel[LogLevel["NOTSET"] = 0] = "NOTSET";
+    LogLevel[LogLevel["DEBUG"] = 1] = "DEBUG";
+    LogLevel[LogLevel["INFO"] = 2] = "INFO";
+    LogLevel[LogLevel["WARNING"] = 3] = "WARNING";
+    LogLevel[LogLevel["ERROR"] = 4] = "ERROR";
+})(LogLevel = exports.LogLevel || (exports.LogLevel = {}));
+
+
+/***/ }),
+
+/***/ 80396:
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+/**
+ * Copyright 2019, Optimizely
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+var uuid_1 = __webpack_require__(53072);
+function generateUUID() {
+    return uuid_1.v4();
+}
+exports.generateUUID = generateUUID;
+function getTimestamp() {
+    return new Date().getTime();
+}
+exports.getTimestamp = getTimestamp;
+/**
+ * Validates a value is a valid TypeScript enum
+ *
+ * @export
+ * @param {object} enumToCheck
+ * @param {*} value
+ * @returns {boolean}
+ */
+function isValidEnum(enumToCheck, value) {
+    var found = false;
+    var keys = Object.keys(enumToCheck);
+    for (var index = 0; index < keys.length; index++) {
+        if (value === enumToCheck[keys[index]]) {
+            found = true;
+            break;
+        }
+    }
+    return found;
+}
+exports.isValidEnum = isValidEnum;
+function groupBy(arr, grouperFn) {
+    var grouper = {};
+    arr.forEach(function (item) {
+        var key = grouperFn(item);
+        grouper[key] = grouper[key] || [];
+        grouper[key].push(item);
+    });
+    return objectValues(grouper);
+}
+exports.groupBy = groupBy;
+function objectValues(obj) {
+    return Object.keys(obj).map(function (key) { return obj[key]; });
+}
+exports.objectValues = objectValues;
+function objectEntries(obj) {
+    return Object.keys(obj).map(function (key) { return [key, obj[key]]; });
+}
+exports.objectEntries = objectEntries;
+function find(arr, cond) {
+    var found;
+    for (var _i = 0, arr_1 = arr; _i < arr_1.length; _i++) {
+        var item = arr_1[_i];
+        if (cond(item)) {
+            found = item;
+            break;
+        }
+    }
+    return found;
+}
+exports.find = find;
+function keyBy(arr, keyByFn) {
+    var map = {};
+    arr.forEach(function (item) {
+        var key = keyByFn(item);
+        map[key] = item;
+    });
+    return map;
+}
+exports.keyBy = keyBy;
+function sprintf(format) {
+    var args = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        args[_i - 1] = arguments[_i];
+    }
+    var i = 0;
+    return format.replace(/%s/g, function () {
+        var arg = args[i++];
+        var type = typeof arg;
+        if (type === 'function') {
+            return arg();
+        }
+        else if (type === 'string') {
+            return arg;
+        }
+        else {
+            return String(arg);
+        }
+    });
+}
+exports.sprintf = sprintf;
+/*
+ * Notification types for use with NotificationCenter
+ * Format is EVENT: <list of parameters to callback>
+ *
+ * SDK consumers can use these to register callbacks with the notification center.
+ *
+ *  @deprecated since 3.1.0
+ *  ACTIVATE: An impression event will be sent to Optimizely
+ *  Callbacks will receive an object argument with the following properties:
+ *    - experiment {Object}
+ *    - userId {string}
+ *    - attributes {Object|undefined}
+ *    - variation {Object}
+ *    - logEvent {Object}
+ *
+ *  DECISION: A decision is made in the system. i.e. user activation,
+ *  feature access or feature-variable value retrieval
+ *  Callbacks will receive an object argument with the following properties:
+ *    - type {string}
+ *    - userId {string}
+ *    - attributes {Object|undefined}
+ *    - decisionInfo {Object|undefined}
+ *
+ *  LOG_EVENT: A batch of events, which could contain impressions and/or conversions,
+ *  will be sent to Optimizely
+ *  Callbacks will receive an object argument with the following properties:
+ *    - url {string}
+ *    - httpVerb {string}
+ *    - params {Object}
+ *
+ *  OPTIMIZELY_CONFIG_UPDATE: This Optimizely instance has been updated with a new
+ *  config
+ *
+ *  TRACK: A conversion event will be sent to Optimizely
+ *  Callbacks will receive the an object argument with the following properties:
+ *    - eventKey {string}
+ *    - userId {string}
+ *    - attributes {Object|undefined}
+ *    - eventTags {Object|undefined}
+ *    - logEvent {Object}
+ *
+ */
+var NOTIFICATION_TYPES;
+(function (NOTIFICATION_TYPES) {
+    NOTIFICATION_TYPES["ACTIVATE"] = "ACTIVATE:experiment, user_id,attributes, variation, event";
+    NOTIFICATION_TYPES["DECISION"] = "DECISION:type, userId, attributes, decisionInfo";
+    NOTIFICATION_TYPES["LOG_EVENT"] = "LOG_EVENT:logEvent";
+    NOTIFICATION_TYPES["OPTIMIZELY_CONFIG_UPDATE"] = "OPTIMIZELY_CONFIG_UPDATE";
+    NOTIFICATION_TYPES["TRACK"] = "TRACK:event_key, user_id, attributes, event_tags, event";
+})(NOTIFICATION_TYPES = exports.NOTIFICATION_TYPES || (exports.NOTIFICATION_TYPES = {}));
+
+
+/***/ }),
+
+/***/ 53072:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var v1 = __webpack_require__(52620);
+var v4 = __webpack_require__(37976);
+
+var uuid = v4;
+uuid.v1 = v1;
+uuid.v4 = v4;
+
+module.exports = uuid;
+
+
+/***/ }),
+
+/***/ 6032:
+/***/ (function(module) {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  // join used to fix memory issue caused by concatenation: https://bugs.chromium.org/p/v8/issues/detail?id=3175#c4
+  return ([
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]], '-',
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]],
+    bth[buf[i++]], bth[buf[i++]]
+  ]).join('');
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+
+/***/ 17064:
+/***/ (function(module) {
+
+// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+
+// getRandomValues needs to be invoked in a context where "this" is a Crypto
+// implementation. Also, find the complete implementation of crypto on IE11.
+var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto)) ||
+                      (typeof(msCrypto) != 'undefined' && typeof window.msCrypto.getRandomValues == 'function' && msCrypto.getRandomValues.bind(msCrypto));
+
+if (getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+
+  module.exports = function whatwgRNG() {
+    getRandomValues(rnds8);
+    return rnds8;
+  };
+} else {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+
+  module.exports = function mathRNG() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return rnds;
+  };
+}
+
+
+/***/ }),
+
+/***/ 52620:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var rng = __webpack_require__(17064);
+var bytesToUuid = __webpack_require__(6032);
+
+// **`v1()` - Generate time-based UUID**
+//
+// Inspired by https://github.com/LiosK/UUID.js
+// and http://docs.python.org/library/uuid.html
+
+var _nodeId;
+var _clockseq;
+
+// Previous uuid creation time
+var _lastMSecs = 0;
+var _lastNSecs = 0;
+
+// See https://github.com/uuidjs/uuid for API details
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+
+  options = options || {};
+  var node = options.node || _nodeId;
+  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
+
+  // node and clockseq need to be initialized to random values if they're not
+  // specified.  We do this lazily to minimize issues related to insufficient
+  // system entropy.  See #189
+  if (node == null || clockseq == null) {
+    var seedBytes = rng();
+    if (node == null) {
+      // Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
+      node = _nodeId = [
+        seedBytes[0] | 0x01,
+        seedBytes[1], seedBytes[2], seedBytes[3], seedBytes[4], seedBytes[5]
+      ];
+    }
+    if (clockseq == null) {
+      // Per 4.2.2, randomize (14 bit) clockseq
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 0x3fff;
+    }
+  }
+
+  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
+  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
+  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
+  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
+  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
+
+  // Per 4.2.1.2, use count of uuid's generated during the current clock
+  // cycle to simulate higher resolution clock
+  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
+
+  // Time since last uuid creation (in msecs)
+  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
+
+  // Per 4.2.1.2, Bump clockseq on clock regression
+  if (dt < 0 && options.clockseq === undefined) {
+    clockseq = clockseq + 1 & 0x3fff;
+  }
+
+  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
+  // time interval
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
+    nsecs = 0;
+  }
+
+  // Per 4.2.1.2 Throw error if too many uuids are requested
+  if (nsecs >= 10000) {
+    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
+  }
+
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+
+  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
+  msecs += 12219292800000;
+
+  // `time_low`
+  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
+  b[i++] = tl >>> 24 & 0xff;
+  b[i++] = tl >>> 16 & 0xff;
+  b[i++] = tl >>> 8 & 0xff;
+  b[i++] = tl & 0xff;
+
+  // `time_mid`
+  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
+  b[i++] = tmh >>> 8 & 0xff;
+  b[i++] = tmh & 0xff;
+
+  // `time_high_and_version`
+  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
+  b[i++] = tmh >>> 16 & 0xff;
+
+  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
+  b[i++] = clockseq >>> 8 | 0x80;
+
+  // `clock_seq_low`
+  b[i++] = clockseq & 0xff;
+
+  // `node`
+  for (var n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+
+  return buf ? buf : bytesToUuid(b);
+}
+
+module.exports = v1;
+
+
+/***/ }),
+
+/***/ 37976:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var rng = __webpack_require__(17064);
+var bytesToUuid = __webpack_require__(6032);
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options === 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+
+/***/ 27128:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var root = __webpack_require__(97188);
+
+/** Built-in value references. */
+var Symbol = root.Symbol;
+
+module.exports = Symbol;
+
+
+/***/ }),
+
+/***/ 16944:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var Symbol = __webpack_require__(27128),
+    getRawTag = __webpack_require__(5664),
+    objectToString = __webpack_require__(73168);
+
+/** `Object#toString` result references. */
+var nullTag = '[object Null]',
+    undefinedTag = '[object Undefined]';
+
+/** Built-in value references. */
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+/**
+ * The base implementation of `getTag` without fallbacks for buggy environments.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the `toStringTag`.
+ */
+function baseGetTag(value) {
+  if (value == null) {
+    return value === undefined ? undefinedTag : nullTag;
+  }
+  return (symToStringTag && symToStringTag in Object(value))
+    ? getRawTag(value)
+    : objectToString(value);
+}
+
+module.exports = baseGetTag;
+
+
+/***/ }),
+
+/***/ 34428:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var trimmedEndIndex = __webpack_require__(15608);
+
+/** Used to match leading whitespace. */
+var reTrimStart = /^\s+/;
+
+/**
+ * The base implementation of `_.trim`.
+ *
+ * @private
+ * @param {string} string The string to trim.
+ * @returns {string} Returns the trimmed string.
+ */
+function baseTrim(string) {
+  return string
+    ? string.slice(0, trimmedEndIndex(string) + 1).replace(reTrimStart, '')
+    : string;
+}
+
+module.exports = baseTrim;
+
+
+/***/ }),
+
+/***/ 4848:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+/** Detect free variable `global` from Node.js. */
+var freeGlobal = typeof __webpack_require__.g == 'object' && __webpack_require__.g && __webpack_require__.g.Object === Object && __webpack_require__.g;
+
+module.exports = freeGlobal;
+
+
+/***/ }),
+
+/***/ 5664:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var Symbol = __webpack_require__(27128);
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/** Used to check objects for own properties. */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var nativeObjectToString = objectProto.toString;
+
+/** Built-in value references. */
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+
+/**
+ * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
+ *
+ * @private
+ * @param {*} value The value to query.
+ * @returns {string} Returns the raw `toStringTag`.
+ */
+function getRawTag(value) {
+  var isOwn = hasOwnProperty.call(value, symToStringTag),
+      tag = value[symToStringTag];
+
+  try {
+    value[symToStringTag] = undefined;
+    var unmasked = true;
+  } catch (e) {}
+
+  var result = nativeObjectToString.call(value);
+  if (unmasked) {
+    if (isOwn) {
+      value[symToStringTag] = tag;
+    } else {
+      delete value[symToStringTag];
+    }
+  }
+  return result;
+}
+
+module.exports = getRawTag;
+
+
+/***/ }),
+
+/***/ 73168:
+/***/ (function(module) {
+
+/** Used for built-in method references. */
+var objectProto = Object.prototype;
+
+/**
+ * Used to resolve the
+ * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
+ * of values.
+ */
+var nativeObjectToString = objectProto.toString;
+
+/**
+ * Converts `value` to a string using `Object.prototype.toString`.
+ *
+ * @private
+ * @param {*} value The value to convert.
+ * @returns {string} Returns the converted string.
+ */
+function objectToString(value) {
+  return nativeObjectToString.call(value);
+}
+
+module.exports = objectToString;
+
+
+/***/ }),
+
+/***/ 97188:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var freeGlobal = __webpack_require__(4848);
+
+/** Detect free variable `self`. */
+var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
+
+/** Used as a reference to the global object. */
+var root = freeGlobal || freeSelf || Function('return this')();
+
+module.exports = root;
+
+
+/***/ }),
+
+/***/ 15608:
+/***/ (function(module) {
+
+/** Used to match a single whitespace character. */
+var reWhitespace = /\s/;
+
+/**
+ * Used by `_.trim` and `_.trimEnd` to get the index of the last non-whitespace
+ * character of `string`.
+ *
+ * @private
+ * @param {string} string The string to inspect.
+ * @returns {number} Returns the index of the last non-whitespace character.
+ */
+function trimmedEndIndex(string) {
+  var index = string.length;
+
+  while (index-- && reWhitespace.test(string.charAt(index))) {}
+  return index;
+}
+
+module.exports = trimmedEndIndex;
+
+
+/***/ }),
+
+/***/ 73336:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var isObject = __webpack_require__(8940),
+    now = __webpack_require__(19868),
+    toNumber = __webpack_require__(8472);
+
+/** Error message constants. */
+var FUNC_ERROR_TEXT = 'Expected a function';
+
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeMax = Math.max,
+    nativeMin = Math.min;
+
+/**
+ * Creates a debounced function that delays invoking `func` until after `wait`
+ * milliseconds have elapsed since the last time the debounced function was
+ * invoked. The debounced function comes with a `cancel` method to cancel
+ * delayed `func` invocations and a `flush` method to immediately invoke them.
+ * Provide `options` to indicate whether `func` should be invoked on the
+ * leading and/or trailing edge of the `wait` timeout. The `func` is invoked
+ * with the last arguments provided to the debounced function. Subsequent
+ * calls to the debounced function return the result of the last `func`
+ * invocation.
+ *
+ * **Note:** If `leading` and `trailing` options are `true`, `func` is
+ * invoked on the trailing edge of the timeout only if the debounced function
+ * is invoked more than once during the `wait` timeout.
+ *
+ * If `wait` is `0` and `leading` is `false`, `func` invocation is deferred
+ * until to the next tick, similar to `setTimeout` with a timeout of `0`.
+ *
+ * See [David Corbacho's article](https://css-tricks.com/debouncing-throttling-explained-examples/)
+ * for details over the differences between `_.debounce` and `_.throttle`.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Function
+ * @param {Function} func The function to debounce.
+ * @param {number} [wait=0] The number of milliseconds to delay.
+ * @param {Object} [options={}] The options object.
+ * @param {boolean} [options.leading=false]
+ *  Specify invoking on the leading edge of the timeout.
+ * @param {number} [options.maxWait]
+ *  The maximum time `func` is allowed to be delayed before it's invoked.
+ * @param {boolean} [options.trailing=true]
+ *  Specify invoking on the trailing edge of the timeout.
+ * @returns {Function} Returns the new debounced function.
+ * @example
+ *
+ * // Avoid costly calculations while the window size is in flux.
+ * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
+ *
+ * // Invoke `sendMail` when clicked, debouncing subsequent calls.
+ * jQuery(element).on('click', _.debounce(sendMail, 300, {
+ *   'leading': true,
+ *   'trailing': false
+ * }));
+ *
+ * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
+ * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
+ * var source = new EventSource('/stream');
+ * jQuery(source).on('message', debounced);
+ *
+ * // Cancel the trailing debounced invocation.
+ * jQuery(window).on('popstate', debounced.cancel);
+ */
+function debounce(func, wait, options) {
+  var lastArgs,
+      lastThis,
+      maxWait,
+      result,
+      timerId,
+      lastCallTime,
+      lastInvokeTime = 0,
+      leading = false,
+      maxing = false,
+      trailing = true;
+
+  if (typeof func != 'function') {
+    throw new TypeError(FUNC_ERROR_TEXT);
+  }
+  wait = toNumber(wait) || 0;
+  if (isObject(options)) {
+    leading = !!options.leading;
+    maxing = 'maxWait' in options;
+    maxWait = maxing ? nativeMax(toNumber(options.maxWait) || 0, wait) : maxWait;
+    trailing = 'trailing' in options ? !!options.trailing : trailing;
+  }
+
+  function invokeFunc(time) {
+    var args = lastArgs,
+        thisArg = lastThis;
+
+    lastArgs = lastThis = undefined;
+    lastInvokeTime = time;
+    result = func.apply(thisArg, args);
+    return result;
+  }
+
+  function leadingEdge(time) {
+    // Reset any `maxWait` timer.
+    lastInvokeTime = time;
+    // Start the timer for the trailing edge.
+    timerId = setTimeout(timerExpired, wait);
+    // Invoke the leading edge.
+    return leading ? invokeFunc(time) : result;
+  }
+
+  function remainingWait(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime,
+        timeWaiting = wait - timeSinceLastCall;
+
+    return maxing
+      ? nativeMin(timeWaiting, maxWait - timeSinceLastInvoke)
+      : timeWaiting;
+  }
+
+  function shouldInvoke(time) {
+    var timeSinceLastCall = time - lastCallTime,
+        timeSinceLastInvoke = time - lastInvokeTime;
+
+    // Either this is the first call, activity has stopped and we're at the
+    // trailing edge, the system time has gone backwards and we're treating
+    // it as the trailing edge, or we've hit the `maxWait` limit.
+    return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
+      (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
+  }
+
+  function timerExpired() {
+    var time = now();
+    if (shouldInvoke(time)) {
+      return trailingEdge(time);
+    }
+    // Restart the timer.
+    timerId = setTimeout(timerExpired, remainingWait(time));
+  }
+
+  function trailingEdge(time) {
+    timerId = undefined;
+
+    // Only invoke if we have `lastArgs` which means `func` has been
+    // debounced at least once.
+    if (trailing && lastArgs) {
+      return invokeFunc(time);
+    }
+    lastArgs = lastThis = undefined;
+    return result;
+  }
+
+  function cancel() {
+    if (timerId !== undefined) {
+      clearTimeout(timerId);
+    }
+    lastInvokeTime = 0;
+    lastArgs = lastCallTime = lastThis = timerId = undefined;
+  }
+
+  function flush() {
+    return timerId === undefined ? result : trailingEdge(now());
+  }
+
+  function debounced() {
+    var time = now(),
+        isInvoking = shouldInvoke(time);
+
+    lastArgs = arguments;
+    lastThis = this;
+    lastCallTime = time;
+
+    if (isInvoking) {
+      if (timerId === undefined) {
+        return leadingEdge(lastCallTime);
+      }
+      if (maxing) {
+        // Handle invocations in a tight loop.
+        clearTimeout(timerId);
+        timerId = setTimeout(timerExpired, wait);
+        return invokeFunc(lastCallTime);
+      }
+    }
+    if (timerId === undefined) {
+      timerId = setTimeout(timerExpired, wait);
+    }
+    return result;
+  }
+  debounced.cancel = cancel;
+  debounced.flush = flush;
+  return debounced;
+}
+
+module.exports = debounce;
+
+
+/***/ }),
+
+/***/ 8940:
+/***/ (function(module) {
+
+/**
+ * Checks if `value` is the
+ * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
+ * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @since 0.1.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(_.noop);
+ * // => true
+ *
+ * _.isObject(null);
+ * // => false
+ */
+function isObject(value) {
+  var type = typeof value;
+  return value != null && (type == 'object' || type == 'function');
+}
+
+module.exports = isObject;
+
+
+/***/ }),
+
+/***/ 22892:
+/***/ (function(module) {
+
+/**
+ * Checks if `value` is object-like. A value is object-like if it's not `null`
+ * and has a `typeof` result of "object".
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is object-like, else `false`.
+ * @example
+ *
+ * _.isObjectLike({});
+ * // => true
+ *
+ * _.isObjectLike([1, 2, 3]);
+ * // => true
+ *
+ * _.isObjectLike(_.noop);
+ * // => false
+ *
+ * _.isObjectLike(null);
+ * // => false
+ */
+function isObjectLike(value) {
+  return value != null && typeof value == 'object';
+}
+
+module.exports = isObjectLike;
+
+
+/***/ }),
+
+/***/ 55332:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var baseGetTag = __webpack_require__(16944),
+    isObjectLike = __webpack_require__(22892);
+
+/** `Object#toString` result references. */
+var symbolTag = '[object Symbol]';
+
+/**
+ * Checks if `value` is classified as a `Symbol` primitive or object.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if `value` is a symbol, else `false`.
+ * @example
+ *
+ * _.isSymbol(Symbol.iterator);
+ * // => true
+ *
+ * _.isSymbol('abc');
+ * // => false
+ */
+function isSymbol(value) {
+  return typeof value == 'symbol' ||
+    (isObjectLike(value) && baseGetTag(value) == symbolTag);
+}
+
+module.exports = isSymbol;
+
+
+/***/ }),
+
+/***/ 19868:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var root = __webpack_require__(97188);
+
+/**
+ * Gets the timestamp of the number of milliseconds that have elapsed since
+ * the Unix epoch (1 January 1970 00:00:00 UTC).
+ *
+ * @static
+ * @memberOf _
+ * @since 2.4.0
+ * @category Date
+ * @returns {number} Returns the timestamp.
+ * @example
+ *
+ * _.defer(function(stamp) {
+ *   console.log(_.now() - stamp);
+ * }, _.now());
+ * // => Logs the number of milliseconds it took for the deferred invocation.
+ */
+var now = function() {
+  return root.Date.now();
+};
+
+module.exports = now;
+
+
+/***/ }),
+
+/***/ 8472:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var baseTrim = __webpack_require__(34428),
+    isObject = __webpack_require__(8940),
+    isSymbol = __webpack_require__(55332);
+
+/** Used as references for various `Number` constants. */
+var NAN = 0 / 0;
+
+/** Used to detect bad signed hexadecimal string values. */
+var reIsBadHex = /^[-+]0x[0-9a-f]+$/i;
+
+/** Used to detect binary string values. */
+var reIsBinary = /^0b[01]+$/i;
+
+/** Used to detect octal string values. */
+var reIsOctal = /^0o[0-7]+$/i;
+
+/** Built-in method references without a dependency on `root`. */
+var freeParseInt = parseInt;
+
+/**
+ * Converts `value` to a number.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category Lang
+ * @param {*} value The value to process.
+ * @returns {number} Returns the number.
+ * @example
+ *
+ * _.toNumber(3.2);
+ * // => 3.2
+ *
+ * _.toNumber(Number.MIN_VALUE);
+ * // => 5e-324
+ *
+ * _.toNumber(Infinity);
+ * // => Infinity
+ *
+ * _.toNumber('3.2');
+ * // => 3.2
+ */
+function toNumber(value) {
+  if (typeof value == 'number') {
+    return value;
+  }
+  if (isSymbol(value)) {
+    return NAN;
+  }
+  if (isObject(value)) {
+    var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
+    value = isObject(other) ? (other + '') : other;
+  }
+  if (typeof value != 'string') {
+    return value === 0 ? value : +value;
+  }
+  value = baseTrim(value);
+  var isBinary = reIsBinary.test(value);
+  return (isBinary || reIsOctal.test(value))
+    ? freeParseInt(value.slice(2), isBinary ? 2 : 8)
+    : (reIsBadHex.test(value) ? NAN : +value);
+}
+
+module.exports = toNumber;
+
+
+/***/ }),
+
+/***/ 97512:
+/***/ (function(module) {
+
+(function(){
+  var _global = this;
+
+  /**
+   * JS Implementation of MurmurHash2
+   *
+   * @author <a href="mailto:gary.court@gmail.com">Gary Court</a>
+   * @see http://github.com/garycourt/murmurhash-js
+   * @author <a href="mailto:aappleby@gmail.com">Austin Appleby</a>
+   * @see http://sites.google.com/site/murmurhash/
+   *
+   * @param {string} str ASCII only
+   * @param {number} seed Positive integer only
+   * @return {number} 32-bit positive integer hash
+   */
+  function MurmurHashV2(str, seed) {
+    var
+      l = str.length,
+      h = seed ^ l,
+      i = 0,
+      k;
+
+    while (l >= 4) {
+      k =
+        ((str.charCodeAt(i) & 0xff)) |
+        ((str.charCodeAt(++i) & 0xff) << 8) |
+        ((str.charCodeAt(++i) & 0xff) << 16) |
+        ((str.charCodeAt(++i) & 0xff) << 24);
+
+      k = (((k & 0xffff) * 0x5bd1e995) + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16));
+      k ^= k >>> 24;
+      k = (((k & 0xffff) * 0x5bd1e995) + ((((k >>> 16) * 0x5bd1e995) & 0xffff) << 16));
+
+    h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16)) ^ k;
+
+      l -= 4;
+      ++i;
+    }
+
+    switch (l) {
+    case 3: h ^= (str.charCodeAt(i + 2) & 0xff) << 16;
+    case 2: h ^= (str.charCodeAt(i + 1) & 0xff) << 8;
+    case 1: h ^= (str.charCodeAt(i) & 0xff);
+            h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
+    }
+
+    h ^= h >>> 13;
+    h = (((h & 0xffff) * 0x5bd1e995) + ((((h >>> 16) * 0x5bd1e995) & 0xffff) << 16));
+    h ^= h >>> 15;
+
+    return h >>> 0;
+  };
+
+  /**
+   * JS Implementation of MurmurHash3 (r136) (as of May 20, 2011)
+   *
+   * @author <a href="mailto:gary.court@gmail.com">Gary Court</a>
+   * @see http://github.com/garycourt/murmurhash-js
+   * @author <a href="mailto:aappleby@gmail.com">Austin Appleby</a>
+   * @see http://sites.google.com/site/murmurhash/
+   *
+   * @param {string} key ASCII only
+   * @param {number} seed Positive integer only
+   * @return {number} 32-bit positive integer hash
+   */
+  function MurmurHashV3(key, seed) {
+    var remainder, bytes, h1, h1b, c1, c1b, c2, c2b, k1, i;
+
+    remainder = key.length & 3; // key.length % 4
+    bytes = key.length - remainder;
+    h1 = seed;
+    c1 = 0xcc9e2d51;
+    c2 = 0x1b873593;
+    i = 0;
+
+    while (i < bytes) {
+        k1 =
+          ((key.charCodeAt(i) & 0xff)) |
+          ((key.charCodeAt(++i) & 0xff) << 8) |
+          ((key.charCodeAt(++i) & 0xff) << 16) |
+          ((key.charCodeAt(++i) & 0xff) << 24);
+      ++i;
+
+      k1 = ((((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16))) & 0xffffffff;
+      k1 = (k1 << 15) | (k1 >>> 17);
+      k1 = ((((k1 & 0xffff) * c2) + ((((k1 >>> 16) * c2) & 0xffff) << 16))) & 0xffffffff;
+
+      h1 ^= k1;
+          h1 = (h1 << 13) | (h1 >>> 19);
+      h1b = ((((h1 & 0xffff) * 5) + ((((h1 >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
+      h1 = (((h1b & 0xffff) + 0x6b64) + ((((h1b >>> 16) + 0xe654) & 0xffff) << 16));
+    }
+
+    k1 = 0;
+
+    switch (remainder) {
+      case 3: k1 ^= (key.charCodeAt(i + 2) & 0xff) << 16;
+      case 2: k1 ^= (key.charCodeAt(i + 1) & 0xff) << 8;
+      case 1: k1 ^= (key.charCodeAt(i) & 0xff);
+
+      k1 = (((k1 & 0xffff) * c1) + ((((k1 >>> 16) * c1) & 0xffff) << 16)) & 0xffffffff;
+      k1 = (k1 << 15) | (k1 >>> 17);
+      k1 = (((k1 & 0xffff) * c2) + ((((k1 >>> 16) * c2) & 0xffff) << 16)) & 0xffffffff;
+      h1 ^= k1;
+    }
+
+    h1 ^= key.length;
+
+    h1 ^= h1 >>> 16;
+    h1 = (((h1 & 0xffff) * 0x85ebca6b) + ((((h1 >>> 16) * 0x85ebca6b) & 0xffff) << 16)) & 0xffffffff;
+    h1 ^= h1 >>> 13;
+    h1 = ((((h1 & 0xffff) * 0xc2b2ae35) + ((((h1 >>> 16) * 0xc2b2ae35) & 0xffff) << 16))) & 0xffffffff;
+    h1 ^= h1 >>> 16;
+
+    return h1 >>> 0;
+  }
+
+  var murmur = MurmurHashV3;
+  murmur.v2 = MurmurHashV2;
+  murmur.v3 = MurmurHashV3;
+
+  if (true) {
+    module.exports = murmur;
+  } else { var _previousRoot; }
+}());
+
+
+/***/ })
+
+}]);

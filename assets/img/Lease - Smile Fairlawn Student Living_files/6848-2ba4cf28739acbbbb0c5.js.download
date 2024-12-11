@@ -1,0 +1,822 @@
+(self["webpackChunktportal_assets"] = self["webpackChunktportal_assets"] || []).push([[6848,2348],{
+
+/***/ 92348:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+var map = {
+	"./af": 36024,
+	"./af.js": 36024,
+	"./ar": 27544,
+	"./ar-dz": 11736,
+	"./ar-dz.js": 11736,
+	"./ar-kw": 47888,
+	"./ar-kw.js": 47888,
+	"./ar-ly": 45272,
+	"./ar-ly.js": 45272,
+	"./ar-ma": 89688,
+	"./ar-ma.js": 89688,
+	"./ar-sa": 44948,
+	"./ar-sa.js": 44948,
+	"./ar-tn": 61992,
+	"./ar-tn.js": 61992,
+	"./ar.js": 27544,
+	"./az": 95777,
+	"./az.js": 95777,
+	"./be": 69940,
+	"./be.js": 69940,
+	"./bg": 86107,
+	"./bg.js": 86107,
+	"./bm": 63544,
+	"./bm.js": 63544,
+	"./bn": 94952,
+	"./bn-bd": 92876,
+	"./bn-bd.js": 92876,
+	"./bn.js": 94952,
+	"./bo": 56576,
+	"./bo.js": 56576,
+	"./br": 7392,
+	"./br.js": 7392,
+	"./bs": 43584,
+	"./bs.js": 43584,
+	"./ca": 17396,
+	"./ca.js": 17396,
+	"./cs": 91800,
+	"./cs.js": 91800,
+	"./cv": 67716,
+	"./cv.js": 67716,
+	"./cy": 70956,
+	"./cy.js": 70956,
+	"./da": 37568,
+	"./da.js": 37568,
+	"./de": 78960,
+	"./de-at": 52131,
+	"./de-at.js": 52131,
+	"./de-ch": 46128,
+	"./de-ch.js": 46128,
+	"./de.js": 78960,
+	"./dv": 43284,
+	"./dv.js": 43284,
+	"./el": 32972,
+	"./el.js": 32972,
+	"./en-au": 64356,
+	"./en-au.js": 64356,
+	"./en-ca": 28440,
+	"./en-ca.js": 28440,
+	"./en-gb": 2448,
+	"./en-gb.js": 2448,
+	"./en-ie": 16320,
+	"./en-ie.js": 16320,
+	"./en-il": 74360,
+	"./en-il.js": 74360,
+	"./en-in": 80632,
+	"./en-in.js": 80632,
+	"./en-nz": 81140,
+	"./en-nz.js": 81140,
+	"./en-sg": 85384,
+	"./en-sg.js": 85384,
+	"./eo": 65620,
+	"./eo.js": 65620,
+	"./es": 32348,
+	"./es-do": 76528,
+	"./es-do.js": 76528,
+	"./es-mx": 98544,
+	"./es-mx.js": 98544,
+	"./es-us": 71208,
+	"./es-us.js": 71208,
+	"./es.js": 32348,
+	"./et": 20373,
+	"./et.js": 20373,
+	"./eu": 69912,
+	"./eu.js": 69912,
+	"./fa": 74984,
+	"./fa.js": 74984,
+	"./fi": 52819,
+	"./fi.js": 52819,
+	"./fil": 72512,
+	"./fil.js": 72512,
+	"./fo": 40952,
+	"./fo.js": 40952,
+	"./fr": 8405,
+	"./fr-ca": 70839,
+	"./fr-ca.js": 70839,
+	"./fr-ch": 45720,
+	"./fr-ch.js": 45720,
+	"./fr.js": 8405,
+	"./fy": 58116,
+	"./fy.js": 58116,
+	"./ga": 9916,
+	"./ga.js": 9916,
+	"./gd": 86908,
+	"./gd.js": 86908,
+	"./gl": 54088,
+	"./gl.js": 54088,
+	"./gom-deva": 15064,
+	"./gom-deva.js": 15064,
+	"./gom-latn": 96300,
+	"./gom-latn.js": 96300,
+	"./gu": 51208,
+	"./gu.js": 51208,
+	"./he": 672,
+	"./he.js": 672,
+	"./hi": 648,
+	"./hi.js": 648,
+	"./hr": 38864,
+	"./hr.js": 38864,
+	"./hu": 28164,
+	"./hu.js": 28164,
+	"./hy-am": 62528,
+	"./hy-am.js": 62528,
+	"./id": 63400,
+	"./id.js": 63400,
+	"./is": 23912,
+	"./is.js": 23912,
+	"./it": 77088,
+	"./it-ch": 77988,
+	"./it-ch.js": 77988,
+	"./it.js": 77088,
+	"./ja": 52501,
+	"./ja.js": 52501,
+	"./jv": 40376,
+	"./jv.js": 40376,
+	"./ka": 67048,
+	"./ka.js": 67048,
+	"./kk": 56416,
+	"./kk.js": 56416,
+	"./km": 58288,
+	"./km.js": 58288,
+	"./kn": 84833,
+	"./kn.js": 84833,
+	"./ko": 33352,
+	"./ko.js": 33352,
+	"./ku": 76376,
+	"./ku.js": 76376,
+	"./ky": 92832,
+	"./ky.js": 92832,
+	"./lb": 61448,
+	"./lb.js": 61448,
+	"./lo": 34116,
+	"./lo.js": 34116,
+	"./lt": 20296,
+	"./lt.js": 20296,
+	"./lv": 76136,
+	"./lv.js": 76136,
+	"./me": 28019,
+	"./me.js": 28019,
+	"./mi": 41320,
+	"./mi.js": 41320,
+	"./mk": 47720,
+	"./mk.js": 47720,
+	"./ml": 81228,
+	"./ml.js": 81228,
+	"./mn": 49564,
+	"./mn.js": 49564,
+	"./mr": 56116,
+	"./mr.js": 56116,
+	"./ms": 88512,
+	"./ms-my": 69676,
+	"./ms-my.js": 69676,
+	"./ms.js": 88512,
+	"./mt": 29824,
+	"./mt.js": 29824,
+	"./my": 82792,
+	"./my.js": 82792,
+	"./nb": 23444,
+	"./nb.js": 23444,
+	"./ne": 77860,
+	"./ne.js": 77860,
+	"./nl": 39940,
+	"./nl-be": 63760,
+	"./nl-be.js": 63760,
+	"./nl.js": 39940,
+	"./nn": 28888,
+	"./nn.js": 28888,
+	"./oc-lnc": 18096,
+	"./oc-lnc.js": 18096,
+	"./pa-in": 78837,
+	"./pa-in.js": 78837,
+	"./pl": 35904,
+	"./pl.js": 35904,
+	"./pt": 96840,
+	"./pt-br": 11048,
+	"./pt-br.js": 11048,
+	"./pt.js": 96840,
+	"./ro": 33060,
+	"./ro.js": 33060,
+	"./ru": 3156,
+	"./ru.js": 3156,
+	"./sd": 96595,
+	"./sd.js": 96595,
+	"./se": 94560,
+	"./se.js": 94560,
+	"./si": 38668,
+	"./si.js": 38668,
+	"./sk": 69500,
+	"./sk.js": 69500,
+	"./sl": 90024,
+	"./sl.js": 90024,
+	"./sq": 84192,
+	"./sq.js": 84192,
+	"./sr": 56832,
+	"./sr-cyrl": 36348,
+	"./sr-cyrl.js": 36348,
+	"./sr.js": 56832,
+	"./ss": 28692,
+	"./ss.js": 28692,
+	"./sv": 63252,
+	"./sv.js": 63252,
+	"./sw": 98904,
+	"./sw.js": 98904,
+	"./ta": 71120,
+	"./ta.js": 71120,
+	"./te": 46688,
+	"./te.js": 46688,
+	"./tet": 59556,
+	"./tet.js": 59556,
+	"./tg": 69248,
+	"./tg.js": 69248,
+	"./th": 27172,
+	"./th.js": 27172,
+	"./tk": 30208,
+	"./tk.js": 30208,
+	"./tl-ph": 91744,
+	"./tl-ph.js": 91744,
+	"./tlh": 331,
+	"./tlh.js": 331,
+	"./tr": 43920,
+	"./tr.js": 43920,
+	"./tzl": 84360,
+	"./tzl.js": 84360,
+	"./tzm": 97524,
+	"./tzm-latn": 81732,
+	"./tzm-latn.js": 81732,
+	"./tzm.js": 97524,
+	"./ug-cn": 48743,
+	"./ug-cn.js": 48743,
+	"./uk": 69328,
+	"./uk.js": 69328,
+	"./ur": 88968,
+	"./ur.js": 88968,
+	"./uz": 51516,
+	"./uz-latn": 19388,
+	"./uz-latn.js": 19388,
+	"./uz.js": 51516,
+	"./vi": 59664,
+	"./vi.js": 59664,
+	"./x-pseudo": 68616,
+	"./x-pseudo.js": 68616,
+	"./yo": 85436,
+	"./yo.js": 85436,
+	"./zh-cn": 3820,
+	"./zh-cn.js": 3820,
+	"./zh-hk": 60112,
+	"./zh-hk.js": 60112,
+	"./zh-mo": 99504,
+	"./zh-mo.js": 99504,
+	"./zh-tw": 38040,
+	"./zh-tw.js": 38040
+};
+
+
+function webpackContext(req) {
+	var id = webpackContextResolve(req);
+	return __webpack_require__(id);
+}
+function webpackContextResolve(req) {
+	if(!__webpack_require__.o(map, req)) {
+		var e = new Error("Cannot find module '" + req + "'");
+		e.code = 'MODULE_NOT_FOUND';
+		throw e;
+	}
+	return map[req];
+}
+webpackContext.keys = function webpackContextKeys() {
+	return Object.keys(map);
+};
+webpackContext.resolve = webpackContextResolve;
+module.exports = webpackContext;
+webpackContext.id = 92348;
+
+/***/ }),
+
+/***/ 82400:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  "default": function() { return /* binding */ datepicker_component; },
+  popupTopPosition: function() { return /* binding */ popupTopPosition; }
+});
+
+// EXTERNAL MODULE: ./node_modules/lodash/lodash.js
+var lodash = __webpack_require__(33568);
+var lodash_default = /*#__PURE__*/__webpack_require__.n(lodash);
+// EXTERNAL MODULE: external "$"
+var external_$_ = __webpack_require__(18592);
+var external_$_default = /*#__PURE__*/__webpack_require__.n(external_$_);
+// EXTERNAL MODULE: ./node_modules/moment/moment.js
+var moment = __webpack_require__(17412);
+var moment_default = /*#__PURE__*/__webpack_require__.n(moment);
+// EXTERNAL MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/showable-widget/component.es6
+var component = __webpack_require__(94470);
+;// CONCATENATED MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/util/scroll-parent/component.es6
+// This module is based on jquery-ui/ui/scroll-parent.js
+
+
+
+function scrollParent( $el, includeHidden ) {
+  var position = $el.css( "position" ),
+    excludeStaticParent = position === "absolute",
+    overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/,
+    scrollParent = $el.parents().filter( function() {
+      var parent = external_$_default()( this );
+      if ( excludeStaticParent && parent.css( "position" ) === "static" ) {
+        return false;
+      }
+      return overflowRegex.test( parent.css( "overflow" ) + parent.css( "overflow-y" ) + parent.css( "overflow-x" ) );
+    } ).eq( 0 );
+
+  return position === "fixed" || !scrollParent.length ? external_$_default()( $el[ 0 ].ownerDocument || document ) : scrollParent;
+};
+
+;// CONCATENATED MODULE: ./vendor/bundle/ruby/3.2.0/gems/gears-20.5.0/lib/assets/javascripts/gears/ui/datepicker/component.es6
+
+
+
+
+
+
+// Accepted Formats (delimeter could be any non-digit character):
+// DD (assumes current month / year, adds DD to 1st of the month to allow values greater than 31)
+// MMDD (assumes current year)
+// MMDDYY (assumes current year)
+// MMDDYYYY
+// MM/DD (assumes current year)
+// MM/DD/YY
+// MM/DD/YYYY
+// YYYY/MM/DD
+// Sep 15 (assumes current year)
+// Sep 15, YY
+// Sep 15, YYYY
+// September 15 (assumes current year)
+// September 15, YY
+// September 15, YYYY
+let formats = {
+  "DD": /^(\d{1,2})$/,
+  "MMDD": /^(\d{2})(\d{2})$/,
+  "MMDDYY": /^(\d{2})(\d{2})(\d{2})$/,
+  "MMDDYYYY": /^(\d{2})(\d{2})(\d{4})$/,
+  "MM/DD": /^(\d{1,2})[\W-](\d{1,2})$/,
+  "MM/DD/YY": /^(\d{1,2})[\W-](\d{1,2})[\W-](\d{2})$/,
+  "MM/DD/YYYY": /^(\d{1,2})[\W-](\d{1,2})[\W-](\d{4})$/,
+  "YYYY/MM/DD": /^(\d{4})[\W-](\d{1,2})[\W-](\d{1,2})$/,
+  "MMM/DD": /^(\w{3})[\W-]+\d{1,2}$/,
+  "MMM/DD/YYYY": /^(\w{3})[\W-]+\d{1,2}[\W-]+\d{4}$/,
+  "MMM/DD/YY": /^(\w{3})[\W-]+\d{1,2}[\D]+\d{2}$/,
+  "MMMM/DD": /^(\w{3,9})[\W-]+\d{1,2}$/,
+  "MMMM/DD/YY": /^(\w{3,9})[\W-]+\d{1,2}[\D]+\d{2}$/,
+  "MMMM/DD/YYYY": /^(\w{3,9})[\W-]+\d{1,2}[\D]+\d{4}$/
+};
+
+// used to keep track so there's never two datepickers shown at once
+let _shownDatepicker = null;
+
+function popupTopPosition({inputHeight, inputTop, popupHeight, position}) {
+  let calculatedPosition = position
+  // If the the popup is too tall to fit below, position it above
+  if (position === 'dynamic') {
+    calculatedPosition = inputTop + inputHeight + popupHeight > window.innerHeight ? 'top' : 'bottom'
+  }
+
+  if (calculatedPosition === 'top') {
+    return inputTop - popupHeight - 1;
+  }
+  return inputTop + inputHeight - 1;
+}
+
+
+class Datepicker extends component["default"] {
+
+  show() {
+    // hide any currently shown datepicker
+    if (_shownDatepicker !== this) { __guard__(_shownDatepicker, x => x.hide()); }
+    _shownDatepicker = this;
+    return super.show(...arguments);
+  }
+
+  hide() {
+    _shownDatepicker = null;
+    return super.hide(...arguments);
+  }
+
+  destroy() {
+    if (this.options && this.options.trigger) {
+      external_$_default()(this.options.trigger).off(`.${this._getNamespace()}`);
+    }
+    external_$_default()(this.$scrollParent).off(`.${this._getNamespace() + this.wid}`);
+    __guard__(this.$form, x => x.off(`.${this._getNamespace() + this.wid}`));
+    __guard__(this.$target, x1 => x1.off(`.${this._getNamespace()}`));
+    return super.destroy(...arguments);
+  }
+
+  _hideAndFocus() {
+    this.hide();
+    return setTimeout(() => {
+      return __guard__(this.$target, x => x.focus().select());
+    }
+    , 0);
+  }
+
+  _onHidden() {
+    external_$_default()(window).off(`.${this._getNamespace() + this.wid}`);
+    external_$_default()(document).off(`.${this._getNamespace() + this.wid}`);
+    external_$_default()(this.$scrollParent).off(`.${this._getNamespace() + this.wid}`);
+    __guard__(this.$target, x => x.off(`input.${this._getNamespace()}`));
+    this.$calendar = null;
+    return super._onHidden(...arguments);
+  }
+
+  _initialize() {
+    super._initialize(...arguments);
+    let $form = this.$target.closest("form");
+    if ($form.length) { this.$form = $form; }
+    this.$scrollParent = scrollParent(this.$target);
+    return this._setEvents();
+  }
+
+  _update() {
+    if ((this.changedOptions.showOnFocus != null) || (this.changedOptions.trigger != null)) { return this._setEvents(); }
+  }
+
+
+  _render() {
+    this.today = moment_default()();
+    this.selectedDate = this._parseDateField();
+    this.moment = this.selectedDate ? moment_default()(this.selectedDate, "MM/DD/YYYY") : moment_default()();
+    this.maxDate = this.options.maxDate ? moment_default()(this.options.maxDate, "MM/DD/YYYY") : undefined;
+    this.$el = external_$_default()(`\
+<section class="${Datepicker.className}">
+<nav class="${Datepicker.className}__nav">
+<div class="${Datepicker.className}__control-prev">
+  <button type="button" class="js-prev-year ${Datepicker.className}__control-button button"><span title="Previous Year" class="${Datepicker.className}__control-icon icon icon-backward" /></button>
+  <button type="button" class="js-prev-month ${Datepicker.className}__control-button button"><span title="Previous Month" class="${Datepicker.className}__control-icon icon icon-caret-left" /></button>
+</div>
+<h1 class="${Datepicker.className}__month" />
+<div class="${Datepicker.className}__control-next">
+  <button type="button" class="js-next-month ${Datepicker.className}__control-button button"><span title="Next Month" class="${Datepicker.className}__control-icon icon icon-caret-right" /></button>
+  <button type="button" class="js-next-year ${Datepicker.className}__control-button button"><span title="Next Year" class="${Datepicker.className}__control-icon icon icon-forward" /></button>
+</div>
+</nav>
+<div class="datepicker__footer">
+<button type="button" class="js-today ${Datepicker.className}__control-button button">Today</button>
+<button type="button" class="js-clear ${Datepicker.className}__control-button button">Clear</button>
+</div>
+</section>\
+`);
+    this._renderMonth();
+    return this._setCalendarEvents();
+  }
+
+
+  _renderMonth() {
+    let $tbody;
+    let firstDayOfMonth = moment_default()([this.moment.year(), this.moment.month()]);
+    let weeksInMonth = Math.ceil( (firstDayOfMonth.day() + firstDayOfMonth.daysInMonth()) / 7 );
+
+    this._hideNextButtonsIfNeeded(firstDayOfMonth);
+
+    if (this.$calendar) {
+      $tbody = this.$calendar.find("tbody").empty();
+    } else {
+      this.$calendar = external_$_default()(`\
+<div class="${Datepicker.className}__calendar">
+<table>
+<thead><tr><th>Su</th><th>Mo</th><th>Tu</th><th>We</th><th>Th</th><th>Fr</th><th>Sa</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>\
+`).insertAfter(this.$el.children("nav"));
+      $tbody = this.$calendar.find("tbody");
+    }
+
+    lodash_default().times(weeksInMonth, () => {
+      $tbody.append(this._renderWeek(firstDayOfMonth));
+      return firstDayOfMonth.add("weeks", 1);
+    }
+    );
+    return this.$el.find(`.${Datepicker.className}__month`).html(this.moment.format("MMMM YYYY"));
+  }
+
+  _hideNextButtonsIfNeeded(firstDayOfMonth) {
+    if (!this.maxDate) {
+      return;
+    }
+
+    if (moment_default()(firstDayOfMonth).add(1, 'months').isAfter(this.maxDate)) {
+      this.$el.find('.js-next-month').hide();
+    } else {
+      this.$el.find('.js-next-month').show();
+    }
+
+    if (moment_default()(firstDayOfMonth).add(1, 'years').isAfter(this.maxDate)) {
+      this.$el.find('.js-next-year').hide();
+    } else {
+      this.$el.find('.js-next-year').show();
+    }
+  }
+
+  _renderWeek(original) {
+    let self = this;
+    let today = moment_default()().format("MM/DD/YYYY");
+    let clone = original.clone().subtract("days", original.day());
+    let $week = external_$_default()(document.createElement("tr"));
+    lodash_default().times(7, function() {
+      let cloneDate = clone.format("MM/DD/YYYY");
+      let cls = `${Datepicker.className}__day`;
+      if (clone.month() !== self.moment.month()) { cls += ` ${Datepicker.className}__day--non-month`; }
+      if (cloneDate === today) { cls += ` ${Datepicker.className}__day--today`; }
+      if (cloneDate === self.selectedDate) { cls += " is-selected"; }
+      if (self.maxDate && clone.isAfter(self.maxDate)) { cls += " is-disabled"; }
+      external_$_default()(document.createElement("td")).append(`\
+<div class="${cls}" data-date="${cloneDate}">${clone.date()}</div>\
+`).appendTo($week);
+      return clone.add("days", 1);
+    });
+
+    return $week;
+  }
+
+
+  _position() {
+    // determine if the position should be absolute or static based on the input ancestor"s positions
+    let positions = this.$target.parents().map( function() { return external_$_default()(this).css("position"); });
+    let position = Array.from(positions).includes("fixed") ? "fixed" : "absolute";
+
+    // calculate the position coordinates
+    // Default left align with input
+    let offset = this.$target.offset();
+    let datepickerTop = popupTopPosition({
+      inputHeight: this.$target.outerHeight(),
+      inputTop: offset.top,
+      popupHeight: this.$el.outerHeight(),
+      position: this.options.position
+    });
+    let datepickerLeft = offset.left;
+    let widgetWidth = this.$el.outerWidth();
+
+    // If cut off, align with right of input
+    if ((datepickerLeft + widgetWidth) > external_$_default()(window).width()) {
+      datepickerLeft = (offset.left + this.$target.parent().width()) - widgetWidth;
+    }
+
+    // Otherwise, center in screen
+    if (datepickerLeft < 0) {
+      datepickerLeft = (external_$_default()(window).width() - widgetWidth) / 2;
+    }
+
+    // if position is fixed and we're scrolled down in the document
+    // we need to account for that difference
+    if (position === "fixed" && this.options.position !== "dynamic") { datepickerTop -= external_$_default()(window).scrollTop(); }
+
+    return this.$el.css({top: datepickerTop, left: datepickerLeft, position});
+  }
+
+
+  _shiftDate(modifier) {
+    let selectedDate = this._parseDateField();
+    if (selectedDate) {
+      let m = moment_default()(selectedDate, "MM/DD/YYYY");
+      modifier(m);
+      let newDate = m.format("MM/DD/YYYY");
+      this._changeDate(newDate);
+      if (_shownDatepicker) {
+        this.moment = m;
+        this.selectedDate = newDate;
+        return this._renderMonth();
+      }
+    }
+  }
+
+  _setEvents() {
+
+    let self = this;
+
+    self.$target.on(`focusout.${self._getNamespace()}`, function(e) {
+      self._setDate();
+      if (!self.clickingOnTrigger) { return self.hide(); }
+    });
+
+    // Use keypress here becase we're interested in characher codes not key codes
+    self.$target.on(`keypress.${self._getNamespace()}`, function(e) {
+      if ([43, 45].includes(e.which)) { // the `+` or `-` key
+        e.preventDefault();
+        let method = e.which === 43 ? "add" : "subtract";
+        // consider adding this back in to support holding shift to
+        // increase/decrease the month instead of the day
+        // It's a little weird since `+` sometimes requires the shift
+        // key to press in the first place.
+        // amount = if e.shiftKey then "month" else "day"
+        let amount = "day";
+        return self._shiftDate(m => m[method](amount, 1));
+      }
+    });
+
+    // Bind an event to the form and parse the datefield before submitting
+    __guard__(self.$form, x => x.on(`submit.${self._getNamespace() + self.wid}`, e => self._setDate()));
+
+    if (self.changedOptions.showOnFocus === false) {
+      self.$target.off(`focusin.${self._getNamespace()}`);
+    }
+    if (self.options.showOnFocus === true) {
+      self.$target.on(`focusin.${self._getNamespace()}`, lodash_default().bind(self.show, self));
+    }
+
+    if (self.options.trigger) {
+      external_$_default()(self.previousOptions.trigger).first().off(`.${self._getNamespace()}`);
+      external_$_default()(self.options.trigger).first().on(`mousedown.${self._getNamespace()}`, e => self.clickingOnTrigger = true);
+      return external_$_default()(self.options.trigger).first().on(`click.${self._getNamespace()}`, function(e) {
+        self.clickingOnTrigger = false;
+        return self.show();
+      });
+    }
+  }
+
+  _setCalendarEvents() {
+
+    let self = this;
+
+    // Allow the mouse wheel to move the datepicker forward and backward by month
+    self.$el.on(`mousewheel.${self._getNamespace()} DOMMouseScroll.${self._getNamespace()}`, function(e) {
+      e.preventDefault();
+      let scrollUp = (e.originalEvent.detail < 0) || (e.originalEvent.wheelDelta > 0);
+      if (scrollUp) {
+        self.moment.subtract("months", 1);
+      } else {
+        self.moment.add("months", 1);
+      }
+      return self._renderMonth();
+    });
+
+    // for browsers that suppor the input event,
+    // update the calendar when a new date is entered
+    self.$target.on(`input.${self._getNamespace()}`, function(e) {
+      let newDate = self._parseDateField();
+      if (newDate && (newDate !== self.selectedDate)) {
+        let m = moment_default()(newDate);
+        if (m.isValid() && (newDate === m.format("MM/DD/YYYY"))) {
+          self.moment = m;
+          self.selectedDate = newDate;
+          return self._renderMonth();
+        }
+      }
+    });
+
+    self.$el.on(`click.${self._getNamespace()}`,
+      ".js-prev-year, .js-prev-month, .js-next-month, .js-next-year, .js-today, .js-clear",
+      function(e) {
+        let $this = external_$_default()(this);
+        if ($this.hasClass("js-prev-year")) {
+          self.moment.subtract("years", 1);
+          return self._renderMonth();
+        }
+        if ($this.hasClass("js-prev-month")) {
+          self.moment.subtract("months", 1);
+          return self._renderMonth();
+        }
+        if ($this.hasClass("js-next-month")) {
+          self.moment.add("months", 1);
+          return self._renderMonth();
+        }
+        if ($this.hasClass("js-next-year")) {
+          self.moment.add("years", 1);
+          return self._renderMonth();
+        }
+        if ($this.hasClass("js-today")) {
+          self._changeDate(moment_default()().format("MM/DD/YYYY"));
+          self._hideAndFocus();
+        }
+        if ($this.hasClass("js-clear")) {
+          self._changeDate("");
+          return self._hideAndFocus();
+        }
+    });
+
+    self.$el.on(`click.${self._getNamespace()}`, `.${Datepicker.className}__day`, function(e) {
+      if (external_$_default()(this).hasClass("is-disabled")) {
+        return;
+      }
+
+      self._changeDate(external_$_default()(this).attr("data-date"));
+      self.$calendar.find(".is-selected").removeClass("is-selected");
+      self._hideAndFocus();
+      return external_$_default()(this).addClass(".is-selected");
+    });
+
+    external_$_default()(document).on(`keydown.${self._getNamespace() + self.wid}`, function(e) {
+      if (e.which === 27) { // ESC
+        self._setDate();
+        return self._hideAndFocus();
+      }
+    });
+
+    external_$_default()(document).on(`click.${self._getNamespace() + self.wid}`, function(e) {
+      // Hide the datepicker unless the clicked event target is whitelisted
+      let $whitelist = external_$_default()(self.$el).add(self.$target).add(self.options.trigger);
+      if (!external_$_default()(e.target).closest($whitelist).length) { return self.hide(); }
+    });
+
+    if (this.options.position === 'dynamic') {
+      external_$_default()(this.$scrollParent).on(`scroll.${self._getNamespace() + self.wid}`,
+        lodash_default().debounce( () => self._position()
+        , 100)
+      );
+    }
+
+    return external_$_default()(window).on(`resize.${self._getNamespace() + self.wid}`,
+      lodash_default().debounce( () => self._position()
+      , 100)
+    );
+  }
+
+
+  _setDate() {
+    let date = this._parseDateField(true);
+    if (date) { return this._changeDate(date); }
+  }
+
+
+  _changeDate(date) {
+    this.selectedDate = date;
+    return this.$target.val(date).trigger(this._getNamespace() + ":change");
+  }
+
+
+  _parseDateField() {
+    // remove leading whitespace and trailing non-digit characters
+    // e.g. convert " sept 14th" to "sept 14"
+    let dateString = this.$target.val().replace(/(^\s*)|(\D+$)/g, "");
+
+    // convert all delimiters to a slash for simplicity
+    dateString = dateString.replace(/[\W-]+/g, "/");
+
+    for (let format in formats) {
+      let regex = formats[format];
+      if (regex.test(dateString)) {
+
+        // add the current year to formats without it
+        switch (format) {
+          case "DD":
+            format = "MM/DD/YYYY";
+            dateString = moment_default()().date(1).add("days", parseInt(dateString, 10) - 1).format(format);
+            break;
+          case "MMDD":
+            format = "MMDDYYYY";
+            dateString += `${moment_default()().year()}`;
+            break;
+          case "MM/DD":
+            format = "MM/DD/YYYY";
+            dateString += `/${moment_default()().year()}`;
+            break;
+          case "MMM/DD":
+            format = "MMM/DD/YYYY";
+            dateString += `/${moment_default()().year()}`;
+            break;
+          case "MMMM/DD":
+            format = "MMMM/DD/YYYY";
+            dateString += `/${moment_default()().year()}`;
+            break;
+        }
+
+        let m = moment_default()(dateString, format);
+        return m.isValid() && m.format("MM/DD/YYYY");
+      }
+    }
+
+    return false;
+  }
+}
+
+Datepicker.className = "datepicker";
+
+Datepicker.namespace = "gears:datepicker";
+
+Datepicker.defaults = {
+  animate: true,
+  destroyOnHidden: false,
+  position: 'bottom',
+  removeOnHidden: true,
+  showOnFocus: false
+};
+/* harmony default export */ var datepicker_component = (Datepicker);
+
+function __guard__(value, transform) {
+  return (typeof value !== 'undefined' && value !== null) ? transform(value) : undefined;
+}
+
+
+/***/ })
+
+}]);

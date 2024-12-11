@@ -1,0 +1,190 @@
+(self["webpackChunktportal_assets"] = self["webpackChunktportal_assets"] || []).push([[2188],{
+
+/***/ 40304:
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__);
+
+// EXTERNAL MODULE: ./vendor/cache/af_signable_documents/lib/assets/javascripts/af_signable_documents/navigator/component.js
+var component = __webpack_require__(54847);
+var component_default = /*#__PURE__*/__webpack_require__.n(component);
+// EXTERNAL MODULE: ./vendor/cache/af_signable_documents/lib/assets/javascripts/af_signable_documents/signing_event_handler/component.js
+var signing_event_handler_component = __webpack_require__(12900);
+var signing_event_handler_component_default = /*#__PURE__*/__webpack_require__.n(signing_event_handler_component);
+;// CONCATENATED MODULE: ./app/javascript/views/rental_agreements.ts
+// @ts-nocheck
+component_default().initialize();signing_event_handler_component_default()();
+;// CONCATENATED MODULE: ./app/javascript/packs/views/rental_agreements.ts
+// @ts-nocheck
+
+
+/***/ }),
+
+/***/ 54847:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function(root, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(18592)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+}(this, function($) {
+    'use strict';
+
+    function windowAnchorValue() {
+      return window.location.hash.replace('#', '');
+    }
+
+    function pageDomId(pagePosition) {
+      return '#lease-page-' + pagePosition;
+    }
+
+    function showPage(pagePosition) {
+      $('.lease-page').addClass('hidden').removeClass('fade-in');
+      $(pageDomId(pagePosition)).removeClass('hidden').addClass('fade-in');
+    }
+
+    function setActiveLink(pagePosition) {
+      $('.lease-nav__item').removeClass('is-current');
+      var navContentPageId = '#lease-page-' + pagePosition + '-nav';
+      $(navContentPageId).addClass('is-current');
+    }
+
+    function updateDirectionalState(pagePosition) {
+      var numContentPages = $('.lease-page').length;
+      if (pagePosition == numContentPages) {
+        $('.js-next-page').addClass('is-disabled');
+        $('.js-prev-page').removeClass('is-disabled');
+      } else if (pagePosition == 1) {
+        $('.js-prev-page').addClass('is-disabled');
+        $('.js-next-page').removeClass('is-disabled');
+      } else {
+        $('.js-prev-page, .js-next-page').removeClass('is-disabled');
+      }
+    }
+
+    function initialize() {
+      function updatePage() {
+        switchToPage(getPagePosition());
+      }
+
+      $(window).on('hashchange', updatePage);
+
+      $(document).ready(updatePage);
+
+      var sideNavToggle = $('.js-open-nav');
+
+      if (sideNavToggle.length > 0) {
+        sideNavToggle.on('touchstart click', function(e) {
+          e.preventDefault();
+
+          $(this).closest('.lease-viewer').toggleClass('is-navigating');
+
+          $('.lease-document').one('click', function() {
+            $('.lease-viewer').removeClass('is-navigating');
+          });
+        });
+      }
+    }
+
+    function getPagePosition() {
+      var anchorValue =  windowAnchorValue();
+      if ( $(pageDomId(anchorValue)).length > 0 ) {
+        return anchorValue;
+      } else {
+        return 1;
+      }
+    }
+
+    function switchToPage(pagePosition) {
+      showPage(pagePosition);
+      setActiveLink(pagePosition);
+      updateDirectionalState(pagePosition);
+      $("html, body").animate({ scrollTop: 0 }, "slow");
+    }
+
+    function updateURL(location) {
+      if ( history.pushState ) {
+        history.pushState({}, '', location + '#' + getPagePosition());
+      }
+    }
+
+    return {
+      initialize: initialize,
+      getPagePosition: getPagePosition,
+      switchToPage: switchToPage,
+      updateURL: updateURL
+    }
+  }
+));
+
+
+/***/ }),
+
+/***/ 12900:
+/***/ (function(module, exports, __webpack_require__) {
+
+var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function(root, factory) {
+  if (true) {
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(18592)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
+		(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
+		__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+  } else {}
+}(this, function($) {
+    'use strict';
+
+    function initialize() {
+      $('.js-signing-form').on('ajax:before', function () {
+          $(this).find('.disable-during-send').addClass('is-sending').attr('disabled', 'disabled');
+        })
+        .on('ajax:complete', function () {
+          $(this).find('.disable-during-send').removeClass('is-sending').removeAttr('disabled');
+        });
+
+      $('.js-lease-acceptance').on('click', function() {
+        if ( $(this).is(':checked') ) {
+          $('.js-signature-button').removeClass('is-disabled').removeAttr('disabled');
+        } else {
+          $('.js-signature-button').addClass('is-disabled').attr('disabled', 'disabled');
+        }
+      });
+
+      // TODO - remove js-initials-button from use, replace with js-signing-button
+      $('.js-signature-button, .js-signing-button, .js-initials-button').on('click', function() {
+        $(this).addClass('js-submit-after-signature-is-created');
+      });
+
+      $(window).on('hashchange', function () {
+        var $checkbox = $('.js-lease-acceptance');
+        if ( $checkbox.is(':checked') ) {
+          $checkbox.click();
+        }
+      });
+    }
+
+    return initialize;
+  }
+));
+
+
+/***/ }),
+
+/***/ 18592:
+/***/ (function(module) {
+
+"use strict";
+module.exports = $;
+
+/***/ })
+
+},
+/******/ function(__webpack_require__) { // webpackRuntimeModules
+/******/ var __webpack_exec__ = function(moduleId) { return __webpack_require__(__webpack_require__.s = moduleId); }
+/******/ var __webpack_exports__ = (__webpack_exec__(40304));
+/******/ }
+]);
